@@ -71,7 +71,9 @@ export default function IndexPage() {
     <section class="grid gap-xl lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.9fr)]">
       <Spin spinning={pageState.isLoadingData}>
         <Show fallback={<p>No items</p>} when={data.length}>
-          <For each={data}>{(item) => <p>{item.name}</p>}</For>
+          <For each={data}>
+            {(item) => <RenderItem currentPath={params.path} item={item} />}
+          </For>
         </Show>
         <Show when={pageState.next_token}>
           <Button onClick={fetchData} variant="outline">
