@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "jsxImportSource": "solid-js",
+    "jsx": "preserve",
+    "types": ["vite-plugin-solid-pages/client", "vite/client"],
+    "strictNullChecks": true,
+    "paths": {
+      "~api": ["../api/src/index.ts"]
+    }
+  },
+  "exclude": ["dist", "node_modules"]
+}

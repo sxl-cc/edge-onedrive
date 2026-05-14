@@ -1,0 +1,21 @@
+{
+  "description": "Lightweight multi-environment OneDrive directory listing workspace",
+  "devDependencies": {
+    "@biomejs/biome": "2.4.15",
+    "@types/node": "^25.7.0",
+    "typescript": "^6.0.3",
+    "ultracite": "7.7.0"
+  },
+  "name": "edge-onedrive-workspace",
+  "scripts": {
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "build:api": "pnpm -F api build",
+    "build:ui": "pnpm -F ui build",
+    "build": "pnpm build:ui && pnpm build:api",
+    "dev": "pnpm --parallel --filter api --filter ui dev --host"
+  },
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@10.33.2"
+}

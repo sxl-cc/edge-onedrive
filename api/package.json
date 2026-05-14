@@ -1,0 +1,27 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Hono API for the edge-onedrive OneDrive directory listing service",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsx watch dev/index.ts",
+    "test": "vitest run",
+    "tsc": "tsc --noEmit --skipLibCheck"
+  },
+  "dependencies": {
+    "db0": "^0.3.4",
+    "dotenv": "^17.4.2",
+    "hono": "^4.12.18"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^2.0.2",
+    "tsdown": "0.22.0",
+    "tsx": "^4.21.0",
+    "vitest": "^4.0.18"
+  }
+}

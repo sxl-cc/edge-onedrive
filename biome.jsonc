@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/solid",
+    "ultracite/biome/vitest"
+  ],
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUndeclaredVariables": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off",
+        "noBarrelFile": "off",
+        "useTopLevelRegex": "off"
+      }
+    }
+  }
+}

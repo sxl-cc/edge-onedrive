@@ -1,0 +1,10 @@
+packages:
+  - api
+  - ui
+
+injectWorkspacePackages: true
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - esbuild
