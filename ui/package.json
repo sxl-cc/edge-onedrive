@@ -11,7 +11,10 @@
     "tsc": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
+    "@iconify-json/ri": "latest",
     "@solid-primitives/i18n": "^2.2.1",
+    "@solid-primitives/refs": "^1.1.3",
+    "@solid-primitives/resize-observer": "^2.1.5",
     "@solidjs/router": "^0.16.1",
     "ofetch": "^1.5.1",
     "solid-js": "^1.9.12",

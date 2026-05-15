@@ -1,5 +1,5 @@
 import { presetTinyUi } from "@solid-tiny-ui/unocss-preset";
-import { defineConfig, presetWind3 } from "unocss";
+import { defineConfig, presetIcons, presetWind3 } from "unocss";
 
 export default defineConfig({
   rules: [
@@ -17,5 +17,6 @@ export default defineConfig({
       preflight: false,
     }),
     presetTinyUi(),
+    presetIcons(),
   ],
 });

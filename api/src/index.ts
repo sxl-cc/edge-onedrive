@@ -4,7 +4,7 @@ import { cors } from "hono/cors";
 import type { KeyValueStorage } from "./kv-storage";
 import { MsGraphSDK } from "./ms-graph";
 import { ApiError } from "./utils/error";
-import { normalizeUrlPath } from "./utils/path";
+import { normalizeUrlPath } from "../../ui/src/utils/path";
 
 interface OAuthTokenExchangePayload {
   authorityHost: string;

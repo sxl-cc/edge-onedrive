@@ -14,7 +14,7 @@ export function App() {
   return (
     <Router
       root={(props) => (
-        <TinyUiProvider hue={190}>
+        <TinyUiProvider hue={200}>
           <TinyToasterProvider>
             <QueryClientProvider>
               <Layout>{props.children}</Layout>

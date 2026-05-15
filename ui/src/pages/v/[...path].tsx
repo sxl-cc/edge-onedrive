@@ -1,20 +1,12 @@
-import { A, useParams } from "@solidjs/router";
+import { useLocation, useParams } from "@solidjs/router";
 import { ofetch } from "ofetch";
-import { For, onMount, Show } from "solid-js";
+import { onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Button, Spin } from "solid-tiny-ui";
+import { Button } from "solid-tiny-ui";
 import { createList, createWatch } from "solid-tiny-utils";
 import type { MsGraphDriveItem } from "~api";
-
-function RenderItem(props: { item: MsGraphDriveItem; currentPath: string }) {
-  return (
-    <Show fallback={<div>{props.item.name}</div>} when={props.item.is_folder}>
-      <A class="block" href={`/${props.currentPath}/${props.item.name}`}>
-        {props.item.name}
-      </A>
-    </Show>
-  );
-}
+import { DriveItemsView } from "../../components/diver-items-view";
+import { normalizeUrlPath } from "../../utils/path";
 
 const listItems = async (params: {
   path: string;
@@ -39,7 +31,10 @@ export default function IndexPage() {
   const [pageState, setPageState] = createStore({
     next_token: "",
     isLoadingData: false,
+    activeItemName: "",
   });
+
+  const location = useLocation();
 
   const [data, acts] = createList<MsGraphDriveItem>([]);
   const fetchData = async () => {
@@ -58,6 +53,7 @@ export default function IndexPage() {
       next_token: "",
       isLoadingData: true,
     });
+    acts.setList([]);
     await fetchData().finally(() => {
       setPageState("isLoadingData", false);
     });
@@ -68,19 +64,18 @@ export default function IndexPage() {
   });
 
   return (
-    <section class="grid gap-xl lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.9fr)]">
-      <Spin spinning={pageState.isLoadingData}>
-        <Show fallback={<p>No items</p>} when={data.length}>
-          <For each={data}>
-            {(item) => <RenderItem currentPath={params.path} item={item} />}
-          </For>
-        </Show>
-        <Show when={pageState.next_token}>
-          <Button onClick={fetchData} variant="outline">
-            Next
-          </Button>
-        </Show>
-      </Spin>
+    <section>
+      <Show fallback={<p>No items</p>} when={data.length}>
+        <DriveItemsView
+          items={data}
+          itemUrl={(item) => normalizeUrlPath(location.pathname, item.name)}
+        />
+      </Show>
+      <Show when={pageState.next_token}>
+        <Button onClick={fetchData} variant="outline">
+          Next
+        </Button>
+      </Show>
     </section>
   );
 }

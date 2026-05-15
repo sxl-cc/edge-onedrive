@@ -1,18 +1,5 @@
 {
-  "note": "Note",
-  "memory": "Memory",
-  "settings": "Settings",
-  "preview": "Preview",
-  "confirm": "Confirm",
-  "password": "Password",
-  "confirmPassword": "Confirm Password",
-  "post_success": "Post successfully",
-  "post_failed": "Post failed",
-  "empty": "Nothing here, maybe you should wait for updating",
-  "login": {
-    "title": "Login"
-  },
-  "setup": {
-    "title": "Set your password"
-  }
+  "name": "Name",
+  "size": "Size",
+  "type": "Type"
 }
