@@ -1,5 +1,6 @@
 {
   "name": "Name",
   "size": "Size",
-  "type": "Type"
+  "created_at": "Created At",
+  "download": "Download"
 }

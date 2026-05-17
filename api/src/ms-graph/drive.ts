@@ -130,7 +130,7 @@ export async function listDir(
   data: MsGraphDriveItem[];
 }> {
   const p = normalizePath(payload.path);
-  const path = `/v1.0/me/drive/root:${p ? `${p}:` : ""}/children`;
+  const path = `/v1.0/me/drive/root${p ? `:${p}:` : ""}/children`;
 
   const searchParams = new URLSearchParams({
     $select:
@@ -160,7 +160,11 @@ export async function listDir(
   };
 }
 
-export async function getItemDetails(sdk: MsGraphSDK, itemPath: string) {
+export async function getItemDetails(
+  sdk: MsGraphSDK,
+  itemPath: string,
+  select: string
+) {
   const p = normalizePath(itemPath);
   const path = `/v1.0/me/drive/root${p ? `:${p}:` : ""}`;
 
@@ -169,6 +173,7 @@ export async function getItemDetails(sdk: MsGraphSDK, itemPath: string) {
     // you should using `content.downloadUrl` to select `@microsoft.graph.downloadUrl`
     // or use `select` instead of `$select`
     $select:
+      select ||
       "name,size,createdDateTime,lastModifiedDateTime,folder,file,content.downloadUrl,image,thumbnails",
     $expand: "thumbnails($select=medium)",
   });

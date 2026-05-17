@@ -1,81 +1,86 @@
-import { useLocation, useParams } from "@solidjs/router";
-import { ofetch } from "ofetch";
-import { onMount, Show } from "solid-js";
-import { createStore } from "solid-js/store";
-import { Button } from "solid-tiny-ui";
-import { createList, createWatch } from "solid-tiny-utils";
+import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
+import { createMemo, createSignal, Show } from "solid-js";
+import { createQuery } from "solid-tiny-query";
+import { Button, SpinRing } from "solid-tiny-ui";
 import type { MsGraphDriveItem } from "~api";
-import { DriveItemsView } from "../../components/diver-items-view";
 import { normalizeUrlPath } from "../../utils/path";
+import { req } from "../../utils/req";
+import { FileView } from "./file-view";
+import { FolderView } from "./folder-view";
 
-const listItems = async (params: {
-  path: string;
-  page_size: number;
-  next_token: string;
-}) => {
-  const res = await ofetch<{
-    next_token?: string;
-    data: MsGraphDriveItem[];
-  }>(`/api/v1/drive/list/${params.path}`, {
-    query: {
-      page_size: params.page_size,
-      next_token: params.next_token,
-    },
+const getPathType = async (path: string) => {
+  const res = await req.get<MsGraphDriveItem>(`/api/v1/drive/get/${path}`, {
+    select: "folder",
   });
-
-  return res;
+  return res.is_folder ? "folder" : "file";
 };
 
 export default function IndexPage() {
   const params = useParams<{ path: string }>();
-  const [pageState, setPageState] = createStore({
-    next_token: "",
-    isLoadingData: false,
-    activeItemName: "",
+  const [searchParams] = useSearchParams<{ type?: "file" | "folder" }>();
+  const [refetchSignal, setRefetchSignal] = createSignal(0);
+
+  const $n = useNavigate();
+
+  const query = createQuery({
+    queryKey: () => ["item-type", params.path],
+    queryFn: async ({ queryKey }) => {
+      const res = await getPathType(queryKey[1]);
+      return res;
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: () => !["file", "folder"].includes(searchParams.type ?? ""),
   });
 
-  const location = useLocation();
+  const pathType = createMemo(() => {
+    if (["file", "folder"].includes(searchParams.type ?? "")) {
+      return searchParams.type;
+    }
 
-  const [data, acts] = createList<MsGraphDriveItem>([]);
-  const fetchData = async () => {
-    const res = await listItems({
-      path: params.path,
-      page_size: 30,
-      next_token: pageState.next_token,
-    });
-
-    acts.setList((prev) => [...prev, ...res.data]);
-    setPageState("next_token", res.next_token || "");
-  };
-
-  const reFetchData = async () => {
-    setPageState({
-      next_token: "",
-      isLoadingData: true,
-    });
-    acts.setList([]);
-    await fetchData().finally(() => {
-      setPageState("isLoadingData", false);
-    });
-  };
-
-  onMount(() => {
-    createWatch(() => params.path, reFetchData);
+    return query.data;
   });
 
   return (
-    <section>
-      <Show fallback={<p>No items</p>} when={data.length}>
-        <DriveItemsView
-          items={data}
-          itemUrl={(item) => normalizeUrlPath(location.pathname, item.name)}
+    <div class="relative flex h-full flex-col">
+      <div class="absolute top-[-42px] right-4px flex w-full flex-shrink-0 items-start justify-end gap-md">
+        <Button
+          disabled={normalizeUrlPath(params.path) === "/"}
+          icon={<div class="i-ri:arrow-up-line c-text-label text-20px" />}
+          onClick={() => {
+            const paths = params.path.split("/");
+            paths.pop();
+            $n(`${normalizeUrlPath("v", ...paths)}?type=folder`);
+          }}
+          variant="text"
         />
-      </Show>
-      <Show when={pageState.next_token}>
-        <Button onClick={fetchData} variant="outline">
-          Next
-        </Button>
-      </Show>
-    </section>
+        <Button
+          icon={<div class="i-ri:refresh-line c-text-label text-18px" />}
+          onClick={async () => {
+            await query.refetch();
+            setRefetchSignal((prev) => prev + 1);
+          }}
+          variant="text"
+        />
+      </div>
+      <div class="mica h-full w-full lg:rounded-8px">
+        <Show
+          fallback={
+            <div class="flex h-full w-full items-center justify-center">
+              <SpinRing />
+            </div>
+          }
+          when={!query.isLoading}
+        >
+          <Show
+            fallback={
+              <FileView path={params.path} refetchSignal={refetchSignal()} />
+            }
+            when={pathType() === "folder"}
+          >
+            <FolderView path={params.path} refetchSignal={refetchSignal()} />
+          </Show>
+        </Show>
+      </div>
+    </div>
   );
 }

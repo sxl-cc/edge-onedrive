@@ -1,3 +1,5 @@
+import { req } from "../utils/req";
+
 export interface OAuthDebugForm {
   authorityHost: string;
   clientId: string;
@@ -93,35 +95,15 @@ export async function exchangeAuthorizationCode(
   sessionState: OAuthDebugSession,
   code: string
 ) {
-  const response = await fetch("/api/v1/debug/pkce/token", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      authorityHost: sessionState.authorityHost,
-      tenant: sessionState.tenant,
-      clientId: sessionState.clientId,
-      clientSecret: sessionState.clientSecret,
-      redirectUri: sessionState.redirectUri,
-      scopes: sessionState.scopes,
-      code,
-    }),
+  const data = await req.post("/api/v1/debug/pkce/token", {
+    authorityHost: sessionState.authorityHost,
+    tenant: sessionState.tenant,
+    clientId: sessionState.clientId,
+    clientSecret: sessionState.clientSecret,
+    redirectUri: sessionState.redirectUri,
+    scopes: sessionState.scopes,
+    code,
   });
-
-  const data = (await response.json()) as Record<string, unknown>;
-
-  if (!response.ok) {
-    const message =
-      typeof data.error_description === "string"
-        ? data.error_description
-        : // biome-ignore lint/style/noNestedTernary: ok
-          typeof data.error === "string"
-          ? data.error
-          : "Token exchange failed";
-
-    throw new Error(message);
-  }
 
   return data;
 }

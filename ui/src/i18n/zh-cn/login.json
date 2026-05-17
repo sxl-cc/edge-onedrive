@@ -1,0 +1,17 @@
+{
+  "brand": "Edge OneDrive",
+  "confirmPassword": "确认密码",
+  "confirmPasswordPlaceholder": "再次输入密码",
+  "login": "登录",
+  "loginDescription": "使用已配置的本地账号继续。",
+  "password": "密码",
+  "passwordMinError": "密码至少需要 9 个字符。",
+  "passwordMismatchError": "两次输入的密码不一致。",
+  "passwordPlaceholder": "至少 9 个字符",
+  "setup": "初始化账号",
+  "setupAndLogin": "初始化并登录",
+  "setupDescription": "首次使用前设置一个本地管理账号。",
+  "setupSuccess": "账号已初始化。",
+  "username": "用户名",
+  "usernameMinError": "用户名至少需要 4 个字符。"
+}

@@ -162,7 +162,7 @@ export class MsGraphSDK {
     return listDir(this, payload);
   }
 
-  getItemDetails(itemPath: string) {
-    return getItemDetails(this, itemPath);
+  getItemDetails(itemPath: string, select = "") {
+    return getItemDetails(this, itemPath, select);
   }
 }

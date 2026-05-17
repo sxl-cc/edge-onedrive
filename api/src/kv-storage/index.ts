@@ -6,21 +6,3 @@ export interface KeyValueStorage {
   get(key: string): Promise<string | null>;
   set(key: string, value: string): Promise<void>;
 }
-
-export class InMemoryKeyValueStorage implements KeyValueStorage {
-  private readonly store: Record<string, string> = {};
-
-  delete(key: string): Promise<void> {
-    delete this.store[key];
-    return Promise.resolve();
-  }
-
-  get(key: string): Promise<string | null> {
-    return Promise.resolve(this.store[key] ?? null);
-  }
-
-  set(key: string, value: string): Promise<void> {
-    this.store[key] = value;
-    return Promise.resolve();
-  }
-}

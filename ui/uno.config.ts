@@ -17,6 +17,8 @@ export default defineConfig({
       preflight: false,
     }),
     presetTinyUi(),
-    presetIcons(),
+    presetIcons({
+      scale: 1.18,
+    }),
   ],
 });

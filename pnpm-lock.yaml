@@ -24,6 +24,12 @@ importers:
 
   api:
     dependencies:
+      '@hono/standard-validator':
+        specifier: ^0.2.2
+        version: 0.2.2(@standard-schema/spec@1.1.0)(hono@4.12.18)
+      arktype:
+        specifier: ^2.2.0
+        version: 2.2.0
       db0:
         specifier: ^0.3.4
         version: 0.3.4
@@ -33,6 +39,15 @@ importers:
       hono:
         specifier: ^4.12.18
         version: 4.12.18
+      nanoid:
+        specifier: ^5.1.11
+        version: 5.1.11
+      time-core:
+        specifier: ^0.3.0
+        version: 0.3.0
+      uncrypto:
+        specifier: ^0.1.3
+        version: 0.1.3
     devDependencies:
       '@hono/node-server':
         specifier: ^2.0.2
@@ -64,9 +79,9 @@ importers:
       '@solidjs/router':
         specifier: ^0.16.1
         version: 0.16.1(solid-js@1.9.12)
-      ofetch:
-        specifier: ^1.5.1
-        version: 1.5.1
+      feqi:
+        specifier: ^0.1.0
+        version: 0.1.0
       solid-js:
         specifier: ^1.9.12
         version: 1.9.12
@@ -74,14 +89,17 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1(solid-js@1.9.12)
       solid-tiny-query:
-        specifier: ^0.7.0
-        version: 0.7.0(solid-js@1.9.12)
+        specifier: ^0.8.1
+        version: 0.8.1(solid-js@1.9.12)
       solid-tiny-ui:
         specifier: https://pkg.pr.new/sxl-cc/solid-tiny-ui/solid-tiny-ui@7dea21a
         version: https://pkg.pr.new/sxl-cc/solid-tiny-ui/solid-tiny-ui@7dea21a(solid-js@1.9.12)
       solid-tiny-utils:
         specifier: 0.12.0
         version: 0.12.0(solid-js@1.9.12)
+      time-core:
+        specifier: ^0.3.0
+        version: 0.3.0
     devDependencies:
       '@solid-tiny-ui/unocss-preset':
         specifier: 0.6.0
@@ -106,6 +124,12 @@ packages:
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
+
+  '@ark/schema@0.56.0':
+    resolution: {integrity: sha512-ECg3hox/6Z/nLajxXqNhgPtNdHWC9zNsDyskwO28WinoFEnWow4IsERNz9AnXRhTZJnYIlAJ4uGn3nlLk65vZA==}
+
+  '@ark/util@0.56.0':
+    resolution: {integrity: sha512-BghfRC8b9pNs3vBoDJhcta0/c1J1rsoS1+HgVUreMFPdhz/CRAKReAu57YEllNaSy98rWAdY1gE+gFup7OXpgA==}
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -460,6 +484,12 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
+
+  '@hono/standard-validator@0.2.2':
+    resolution: {integrity: sha512-mJ7W84Bt/rSvoIl63Ynew+UZOHAzzRAoAXb3JaWuxAkM/Lzg+ZHTCUiz77KOtn2e623WNN8LkD57Dk0szqUrIw==}
+    peerDependencies:
+      '@standard-schema/spec': ^1.0.0
+      hono: '>=3.9.0'
 
   '@iconify-json/ri@1.2.10':
     resolution: {integrity: sha512-WWMhoncVVM+Xmu9T5fgu2lhYRrKTEWhKk3Com0KiM111EeEsRLiASjpsFKnC/SrB6covhUp95r2mH8tGxhgd5Q==}
@@ -1211,6 +1241,12 @@ packages:
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
 
+  arkregex@0.0.5:
+    resolution: {integrity: sha512-ncYjBdLlh5/QnVsAA8De16Tc9EqmYM7y/WU9j+236KcyYNUXogpz3sC4ATIZYzzLxwI+0sEOaQLEmLmRleaEXw==}
+
+  arktype@2.2.0:
+    resolution: {integrity: sha512-t54MZ7ti5BhOEvzEkgKnWvqj+UbDfWig+DHr5I34xatymPusKLS0lQpNJd8M6DzmIto2QGszHfNKoFIT8tMCZQ==}
+
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
@@ -1440,6 +1476,10 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  feqi@0.1.0:
+    resolution: {integrity: sha512-GKAJ9geFhaEHr2ZlHwYkFtLB4J8h6whpQqFg0QzTkKGiePXo9te3KEEDTSOlt79QJx0KSBfQJZUtmVBVN6xMFg==}
+    engines: {node: '>=18'}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -1685,6 +1725,11 @@ packages:
   nanoid@3.3.12:
     resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.11:
+    resolution: {integrity: sha512-v+KEsUv2ps74PaSKv0gHTxTCgMXOIfBEbaqa6w6ISIGC7ZsvHN4N9oJ8d4cmf0n5oTzQz2SLmThbQWhjd/8eKg==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   node-addon-api@7.1.1:
@@ -1994,8 +2039,8 @@ packages:
     peerDependencies:
       solid-js: ^1.9.7
 
-  solid-tiny-query@0.7.0:
-    resolution: {integrity: sha512-afvyQxhkFRr6BHadX5EA6M2guVGdTJEMXDkKVAqsnT2bExqdTlj7AFUoa+SmARA0b6slfr9fOsoz0nTX72O3UA==}
+  solid-tiny-query@0.8.1:
+    resolution: {integrity: sha512-SeH4GN3n8SALInHJthp6SRoC6V+Yu6atfqbsV1XzRMmYpLIY93QSYdcdPxMNpGbnAQg/60lPWAHjLb1iKewsqA==}
     peerDependencies:
       solid-js: ^1.9.7
 
@@ -2139,6 +2184,9 @@ packages:
 
   unconfig@7.5.0:
     resolution: {integrity: sha512-oi8Qy2JV4D3UQ0PsopR28CzdQ3S/5A1zwsUwp/rosSbfhJ5z7b90bIyTwi/F7hCLD4SGcZVjDzd4XoUQcEanvA==}
+
+  uncrypto@0.1.3:
+    resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
 
   undici-types@7.21.0:
     resolution: {integrity: sha512-w9IMgQrz4O0YN1LtB7K5P63vhlIOvC7opSmouCJ+ZywlPAlO9gIkJ+otk6LvGpAs2wg4econaCz3TvQ9xPoyuQ==}
@@ -2317,6 +2365,12 @@ snapshots:
     dependencies:
       package-manager-detector: 1.6.0
       tinyexec: 1.1.2
+
+  '@ark/schema@0.56.0':
+    dependencies:
+      '@ark/util': 0.56.0
+
+  '@ark/util@0.56.0': {}
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -2609,6 +2663,11 @@ snapshots:
 
   '@hono/node-server@2.0.2(hono@4.12.18)':
     dependencies:
+      hono: 4.12.18
+
+  '@hono/standard-validator@0.2.2(@standard-schema/spec@1.1.0)(hono@4.12.18)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
       hono: 4.12.18
 
   '@iconify-json/ri@1.2.10':
@@ -3232,6 +3291,16 @@ snapshots:
     dependencies:
       sprintf-js: 1.0.3
 
+  arkregex@0.0.5:
+    dependencies:
+      '@ark/util': 0.56.0
+
+  arktype@2.2.0:
+    dependencies:
+      '@ark/schema': 0.56.0
+      '@ark/util': 0.56.0
+      arkregex: 0.0.5
+
   assertion-error@2.0.1: {}
 
   ast-kit@3.0.0-beta.1:
@@ -3418,6 +3487,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
       picomatch: 4.0.4
+
+  feqi@0.1.0: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -3616,6 +3687,8 @@ snapshots:
   ms@2.1.3: {}
 
   nanoid@3.3.12: {}
+
+  nanoid@5.1.11: {}
 
   node-addon-api@7.1.1:
     optional: true
@@ -3936,7 +4009,7 @@ snapshots:
       solid-js: 1.9.12
       solid-tiny-utils: 0.12.0(solid-js@1.9.12)
 
-  solid-tiny-query@0.7.0(solid-js@1.9.12):
+  solid-tiny-query@0.8.1(solid-js@1.9.12):
     dependencies:
       solid-js: 1.9.12
       solid-tiny-context: 0.3.1(solid-js@1.9.12)
@@ -4062,6 +4135,8 @@ snapshots:
       jiti: 2.7.0
       quansync: 1.0.0
       unconfig-core: 7.5.0
+
+  uncrypto@0.1.3: {}
 
   undici-types@7.21.0: {}
 

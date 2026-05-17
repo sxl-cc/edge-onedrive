@@ -1,31 +1,19 @@
 import { useNavigate } from "@solidjs/router";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, type JSX, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { combineClass } from "solid-tiny-utils";
+import {
+  combineClass,
+  createEventListener,
+  createVisibilityObserver,
+  createWatch,
+  list,
+  runAtNextAnimationFrame,
+} from "solid-tiny-utils";
 import type { MsGraphDriveItem } from "~api";
 import { useTranslator } from "../../i18n";
 import { sizeToString } from "../../utils/size";
 import { TableCore } from "../tiny-table";
-
-const iconClass = (item: MsGraphDriveItem) => {
-  if (item.is_folder) {
-    return "i-ri:folder-6-line";
-  }
-
-  if (item.mime_type.startsWith("image/")) {
-    return "i-ri:image-line";
-  }
-
-  if (item.mime_type.startsWith("video/")) {
-    return "i-ri:video-line";
-  }
-
-  if (item.mime_type.startsWith("audio/")) {
-    return "i-ri:music-line";
-  }
-
-  return "i-ri:file-line";
-};
+import { getDriveItemIconClass } from "./item-icon-cls";
 
 function DriveItemRow(props: {
   item: MsGraphDriveItem;
@@ -56,17 +44,59 @@ function DriveItemRow(props: {
         }
       }}
     >
-      <TableCore.Cell class="px-sm">
+      <TableCore.Cell class="h-46px px-sm">
         <div class="flex items-center">
-          <div class={combineClass(iconClass(props.item), "flex-shrink-0")} />
+          <div
+            class={combineClass(
+              getDriveItemIconClass(props.item),
+              "c-text-label fs-lg flex-shrink-0"
+            )}
+          />
           <div class="ml-sm max-w-full truncate">{props.item.name}</div>
         </div>
       </TableCore.Cell>
-      <TableCore.Cell class="px-sm">
-        {sizeToString(props.item.size)}
+      <TableCore.Cell class="h-40px px-sm">
+        <div class="max-w-full truncate">{sizeToString(props.item.size)}</div>
       </TableCore.Cell>
-      <TableCore.Cell class="px-sm">
-        {props.item.is_folder ? "folder" : "file"}
+      <TableCore.Cell class="h-40px px-sm">
+        <div class="max-w-full truncate">
+          {props.item.is_folder ? "folder" : props.item.mime_type}
+        </div>
+      </TableCore.Cell>
+    </TableCore.Row>
+  );
+}
+
+function DriveItemRowsSkeleton() {
+  return (
+    <TableCore.Row>
+      <TableCore.Cell class="h-46px px-sm">
+        <div class="h-60% w-25% animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+      </TableCore.Cell>
+      <TableCore.Cell class="h-40px px-sm">
+        <div class="h-60% w-20% animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+      </TableCore.Cell>
+      <TableCore.Cell class="h-40px px-sm">
+        <div class="h-60% w-30% animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+      </TableCore.Cell>
+    </TableCore.Row>
+  );
+}
+
+function ContentRow(props: { children: JSX.Element; class?: string }) {
+  const [state] = TableCore.useContext();
+  return (
+    <TableCore.Row>
+      <TableCore.Cell colSpan="3">
+        <div
+          class={combineClass(
+            "sticky left-0 flex flex-col items-center justify-center",
+            props.class
+          )}
+          style={{ width: `${state.wrapperWidth}px` }}
+        >
+          {props.children}
+        </div>
       </TableCore.Cell>
     </TableCore.Row>
   );
@@ -75,7 +105,9 @@ function DriveItemRow(props: {
 export function DriveItemsView(props: {
   items: MsGraphDriveItem[];
   itemUrl: (item: MsGraphDriveItem) => string;
-  canLoadMore?: boolean;
+  loading?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => boolean | Promise<boolean>;
 }) {
   const t = useTranslator();
 
@@ -83,14 +115,86 @@ export function DriveItemsView(props: {
     activeItem: -1,
   });
 
+  createWatch(
+    () => props.items,
+    () => {
+      setState("activeItem", -1);
+    }
+  );
+
   const [widthRef, setWidthRef] = createSignal<HTMLDivElement>();
+  const [scrollRef, setScrollRef] = createSignal<HTMLDivElement>();
+  const [headerRef, setHeaderRef] = createSignal<HTMLDivElement>();
+  const [loadMoreRef, setLoadMoreRef] = createSignal<HTMLDivElement>();
+
+  createEventListener(scrollRef, "scroll", (e: MouseEvent) => {
+    const el = headerRef();
+    const tar = e.target as HTMLDivElement;
+    if (el) {
+      el.scrollLeft = tar.scrollLeft;
+    }
+  });
+
+  const useVisibilityObserver = createVisibilityObserver({
+    threshold: 0,
+    rootMargin: "100px",
+  });
+
+  const isVisible = useVisibilityObserver(loadMoreRef);
+
+  const checkNeedMore = () => {
+    if (!props.hasMore) {
+      return;
+    }
+    const wrapperEl = scrollRef();
+    const loadMoreEl = loadMoreRef();
+    if (!(wrapperEl && loadMoreEl)) {
+      return;
+    }
+
+    const rootRect = wrapperEl.getBoundingClientRect();
+    const loadMoreRect = loadMoreEl.getBoundingClientRect();
+    const visible =
+      loadMoreRect.top <= rootRect.bottom + 100 &&
+      loadMoreRect.bottom >= rootRect.top;
+
+    if (visible) {
+      loadMore();
+    }
+  };
+
+  const loadMore = async () => {
+    if (!props.hasMore) {
+      return;
+    }
+    console.log("try load more");
+
+    const needMore = await props.onLoadMore?.();
+    if (needMore) {
+      runAtNextAnimationFrame(checkNeedMore);
+    }
+  };
+
+  createWatch(isVisible, (isVisible) => {
+    console.log("load-more visible: ", isVisible);
+
+    if (isVisible) {
+      loadMore();
+    }
+  });
 
   return (
-    <TableCore class={"w-full"} widthRef={widthRef()}>
-      <div class="b-b b-neutral-1/50 w-full">
-        <TableCore.Table>
+    <TableCore class={"flex h-full w-full flex-col"} widthRef={widthRef()}>
+      <div class="b-b b-neutral-1/50 w-full flex-shrink-0">
+        <TableCore.Table ref={setHeaderRef}>
           <TableCore.Header>
-            <For each={[t("global.name"), t("global.size"), t("global.type")]}>
+            <For
+              each={[
+                t("global.name"),
+                t("global.size"),
+                t("global.created_at"),
+              ]}
+            >
               {(label) => (
                 <TableCore.Column class="fw-normal c-text-label fs-xs px-sm py-md text-align-left">
                   {label}
@@ -101,26 +205,43 @@ export function DriveItemsView(props: {
         </TableCore.Table>
       </div>
       <div
-        class="relative h-400px w-full overflow-auto"
+        class="relative w-full flex-1 overflow-auto"
+        ref={setScrollRef}
         style={{
           "scrollbar-width": "thin",
           "scrollbar-color": "rgb(var(--tiny-rgb-neutral-0))",
+          "scroll-behavior": "smooth",
         }}
       >
         <TableCore.Table>
           <TableCore.Body>
-            <For each={props.items}>
-              {(driveItem, index) => (
-                <DriveItemRow
-                  active={index() === state.activeItem}
-                  item={driveItem}
-                  itemUrl={props.itemUrl}
-                  onActive={() => {
-                    setState("activeItem", index());
-                  }}
-                />
-              )}
-            </For>
+            <Show
+              fallback={
+                <For each={list(5)}>{() => <DriveItemRowsSkeleton />}</For>
+              }
+              when={!props.loading}
+            >
+              <For each={props.items}>
+                {(driveItem, index) => (
+                  <DriveItemRow
+                    active={index() === state.activeItem}
+                    item={driveItem}
+                    itemUrl={props.itemUrl}
+                    onActive={() => {
+                      setState("activeItem", index());
+                    }}
+                  />
+                )}
+              </For>
+              <Show when={props.hasMore}>
+                <ContentRow>
+                  <div
+                    class="i-ri:loader-2-line animate-spin p-md"
+                    ref={setLoadMoreRef}
+                  />
+                </ContentRow>
+              </Show>
+            </Show>
           </TableCore.Body>
         </TableCore.Table>
         <div class="absolute top-0 right-0 left-0" ref={setWidthRef} />
