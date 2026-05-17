@@ -37,7 +37,7 @@ export function detectFileType(mimeType: string, filename: string) {
   if (mimeType.startsWith("audio/")) {
     return "audio";
   }
-  if (mimeType.startsWith("application/zip")) {
+  if (["application/x-gzip", "application/zip"].includes(mimeType)) {
     return "zip";
   }
   if (mimeType.startsWith("text")) {

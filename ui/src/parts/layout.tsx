@@ -18,7 +18,7 @@ export function Layout(props: { children: JSX.Element }) {
   return (
     <div class="flex h-screen w-full flex-col lg:mx-auto lg:w-800px">
       <header class="flex h-68px items-end pb-10px">
-        <A href="/">
+        <A end href="/">
           <img alt="logo" height="48" src="/logo.png" width="48" />
         </A>
       </header>

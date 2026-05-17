@@ -42,7 +42,7 @@ export default function IndexPage() {
 
   return (
     <div class="relative flex h-full flex-col">
-      <div class="absolute top-[-42px] right-4px flex w-full flex-shrink-0 items-start justify-end gap-4px">
+      <div class="absolute top-[-42px] right-4px flex items-start justify-end gap-4px">
         <Button
           disabled={normalizeUrlPath(params.path) === "/"}
           icon={<div class="i-ri:arrow-up-line c-text-label text-20px" />}
@@ -74,7 +74,9 @@ export default function IndexPage() {
               <SpinRing />
             </div>
           }
-          when={!query.isLoading}
+          when={
+            !query.isLoading && ["file", "folder"].includes(pathType() ?? "")
+          }
         >
           <Show
             fallback={
