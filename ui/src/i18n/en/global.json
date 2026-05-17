@@ -2,5 +2,6 @@
   "name": "Name",
   "size": "Size",
   "created_at": "Created At",
-  "download": "Download"
+  "download": "Download",
+  "settings": "Settings"
 }

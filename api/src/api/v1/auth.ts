@@ -9,6 +9,7 @@ import {
   verifySafeHash,
 } from "../../auth";
 import type { KeyValueStorage } from "../../kv-storage";
+import { createMsGraphSDK } from "../../ms-graph/client";
 import { ApiError } from "../../utils/error";
 import { success } from "../../utils/resp";
 import type { V1App } from ".";
@@ -20,6 +21,10 @@ const loginInfo = type({
 
 const refreshInfo = type({
   refresh_token: "string",
+});
+
+const msGraphRefreshTokenInfo = type({
+  refresh_token: "string > 0",
 });
 
 const ACCESS_TOKEN_EXPIRATION = 60 * 60 * 1000; // 1 hour
@@ -98,16 +103,62 @@ export function registerV1AuthRoutes(v1: V1App) {
     return c.json(tokens);
   });
 
-  v1.post("/change-login-info", sValidator("json", loginInfo), async (c) => {
-    const data = c.req.valid("json");
+  v1.get("/auth/settings", async (c) => {
     const kv = c.get("kv");
-    await kv.set("username", data.username);
-    await kv.set("hashed_password", await safeHash(data.password));
+    const username = await kv.get("username");
+    const refreshToken = await kv.get("refresh_token");
+    const apiKey = await kv.get("api_key");
 
-    return success(c);
+    return c.json({
+      username: username ?? "",
+      has_ms_graph_refresh_token: Boolean(refreshToken),
+      has_api_key: Boolean(apiKey),
+    });
   });
 
-  v1.post("/new-key", async (c) => {
+  v1.post(
+    "/auth/change-login-info",
+    sValidator("json", loginInfo),
+    async (c) => {
+      const data = c.req.valid("json");
+      const kv = c.get("kv");
+      await kv.set("username", data.username);
+      await kv.set("hashed_password", await safeHash(data.password));
+
+      return success(c);
+    }
+  );
+
+  v1.post(
+    "/auth/ms-graph-refresh-token",
+    sValidator("json", msGraphRefreshTokenInfo),
+    async (c) => {
+      const data = c.req.valid("json");
+      const kv = c.get("kv");
+      const oldToken = await kv.get("refresh_token");
+      await kv.set("refresh_token", data.refresh_token);
+      try {
+        const sdk = await createMsGraphSDK(c);
+        await sdk.refreshAllTokens(true);
+      } catch (error) {
+        if (oldToken) {
+          await kv.set("refresh_token", oldToken);
+        } else {
+          await kv.delete("refresh_token");
+        }
+
+        throw new ApiError("Failed to verify refresh token", {
+          status: 400,
+          details: error instanceof Error ? error.message : null,
+          code: "failed_to_verify_refresh_token",
+        });
+      }
+
+      return success(c);
+    }
+  );
+
+  v1.post("/auth/new-key", async (c) => {
     const newKey = generateApiKey(0);
     const kv = c.get("kv");
 

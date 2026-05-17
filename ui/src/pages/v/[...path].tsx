@@ -42,7 +42,7 @@ export default function IndexPage() {
 
   return (
     <div class="relative flex h-full flex-col">
-      <div class="absolute top-[-42px] right-4px flex w-full flex-shrink-0 items-start justify-end gap-md">
+      <div class="absolute top-[-42px] right-4px flex w-full flex-shrink-0 items-start justify-end gap-4px">
         <Button
           disabled={normalizeUrlPath(params.path) === "/"}
           icon={<div class="i-ri:arrow-up-line c-text-label text-20px" />}
@@ -61,8 +61,13 @@ export default function IndexPage() {
           }}
           variant="text"
         />
+        <Button
+          icon={<div class="i-ri:settings-line c-text-label text-18px" />}
+          onClick={() => $n("/settings")}
+          variant="text"
+        />
       </div>
-      <div class="mica h-full w-full lg:rounded-8px">
+      <div class="h-full w-full">
         <Show
           fallback={
             <div class="flex h-full w-full items-center justify-center">

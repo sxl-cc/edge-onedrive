@@ -58,7 +58,11 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
     .use(
       authMiddleware((c) => {
         const path = c.req.path;
-        return path.startsWith("/api/v1/auth");
+        return (
+          path === "/api/v1/auth/login" ||
+          path === "/api/v1/auth/refresh" ||
+          path === "/api/v1/auth/setup"
+        );
       })
     );
 

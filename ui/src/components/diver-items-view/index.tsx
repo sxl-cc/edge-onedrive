@@ -167,7 +167,6 @@ export function DriveItemsView(props: {
     if (!props.hasMore) {
       return;
     }
-    console.log("try load more");
 
     const needMore = await props.onLoadMore?.();
     if (needMore) {
@@ -176,8 +175,6 @@ export function DriveItemsView(props: {
   };
 
   createWatch(isVisible, (isVisible) => {
-    console.log("load-more visible: ", isVisible);
-
     if (isVisible) {
       loadMore();
     }

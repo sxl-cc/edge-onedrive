@@ -24,11 +24,22 @@ export function authMiddleware(
     const token = authHeader.slice(7); // Remove "Bearer " prefix
     const kv: KeyValueStorage = c.get("kv");
     const hashedToken = await kv.get(HASHED_ACCESS_TOKEN_KEY);
-    if (!(hashedToken && (await verifySafeHash(token, hashedToken)))) {
+    const hashedApiKey = await kv.get("api_key");
+    const isAccessToken = Boolean(
+      hashedToken && (await verifySafeHash(token, hashedToken))
+    );
+    const isApiKey = Boolean(
+      hashedApiKey && (await verifySafeHash(token, hashedApiKey))
+    );
+
+    if (!(isAccessToken || isApiKey)) {
       throw apiKeyInvalid;
     }
+
     if (!verifyApiKey(token)) {
-      await kv.delete(HASHED_ACCESS_TOKEN_KEY);
+      if (isAccessToken) {
+        await kv.delete(HASHED_ACCESS_TOKEN_KEY);
+      }
       throw new ApiError("API key is deprecated", {
         status: 401,
         details: null,
