@@ -10,6 +10,8 @@
   "scripts": {
     "check": "ultracite check",
     "fix": "ultracite fix",
+    "demo:filesamples": "node scripts/download-filesamples-demo.ts",
+    "demo:filesamples:dry-run": "node scripts/download-filesamples-demo.ts --dry-run",
     "build:api": "pnpm -F api build",
     "build:ui": "pnpm -F ui build",
     "build": "pnpm build:ui && pnpm build:api",

@@ -199,8 +199,13 @@ export default function SettingsPage() {
       >
         <div class="flex w-full flex-col">
           <header class="mb-xl pt-md">
-            <p class="fs-lg c-text-heading m-0">{t("global.settings")}</p>
-            <p class="m-0 mt-sm text-neutral-7 text-sm leading-6">
+            <p class="fs-xs c-neutral-6 m-0 uppercase tracking-[0.18em]">
+              Edge OneDrive
+            </p>
+            <p class="fs-xl c-text-heading m-0 mt-sm font-700">
+              {t("global.settings")}
+            </p>
+            <p class="c-neutral-7 fs-sm m-0 mt-sm leading-6">
               {t("settings.description")}
             </p>
           </header>

@@ -105,13 +105,13 @@ export default function LoginPage() {
           }}
         >
           <div class="mb-xl">
-            <p class="m-0 text-12px text-neutral-6 uppercase tracking-[0.18em]">
-              {t("login.brand")}
+            <p class="fs-xs m-0 text-neutral-6 uppercase tracking-[0.18em]">
+              Edge OneDrive
             </p>
-            <h1 class="m-0 mt-sm font-700 text-2xl text-neutral-12">
+            <h1 class="fs-xl c-text-heading m-0 mt-sm font-700">
               {isSetupMode() ? t("login.setup") : t("login.login")}
             </h1>
-            <p class="m-0 mt-sm text-neutral-7 text-sm leading-6">
+            <p class="c-neutral-7 fs-sm m-0 mt-sm leading-6">
               {isSetupMode()
                 ? t("login.setupDescription")
                 : t("login.loginDescription")}

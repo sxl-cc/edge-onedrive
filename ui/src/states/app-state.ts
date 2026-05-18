@@ -54,6 +54,14 @@ const appState = defineGlobalStore("app-state", {
         throw err;
       }
     },
+
+    logout() {
+      this.actions.setState({
+        accessToken: "",
+        refreshToken: "",
+        expiresAt: 0,
+      });
+    },
   },
 });
 

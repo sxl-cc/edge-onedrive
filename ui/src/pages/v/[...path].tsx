@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, createSignal, Show } from "solid-js";
 import { createQuery } from "solid-tiny-query";
 import { Button, SpinRing } from "solid-tiny-ui";
+import { createWatch } from "solid-tiny-utils";
 import type { MsGraphDriveItem } from "~api";
 import { normalizeUrlPath } from "../../utils/path";
 import { req } from "../../utils/req";
@@ -39,6 +40,13 @@ export default function IndexPage() {
 
     return query.data;
   });
+
+  createWatch(
+    () => [query.isLoading, pathType()],
+    ([load, t]) => {
+      console.log(load, t);
+    }
+  );
 
   return (
     <div class="relative flex h-full flex-col">

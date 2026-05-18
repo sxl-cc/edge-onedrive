@@ -9,7 +9,7 @@ export function registerV1DriveRoutes(v1: V1App) {
     const sdk = await createMsGraphSDK(c);
 
     const res = await sdk.listDir({
-      path: fullPath(c, path),
+      path: fullPath(c, encodeURIComponent(path)),
       pageSize,
       nextToken: c.req.query("next_token"),
     });
@@ -20,7 +20,10 @@ export function registerV1DriveRoutes(v1: V1App) {
     const path = c.req.param("path");
     const select = c.req.query("select");
     const sdk = await createMsGraphSDK(c);
-    const res = await sdk.getItemDetails(fullPath(c, path), select);
+    const res = await sdk.getItemDetails(
+      fullPath(c, encodeURIComponent(path)),
+      select
+    );
     return c.json(res);
   });
 }

@@ -1,6 +1,17 @@
 import { createFeqi, type Feqi, type FetchOptions } from "feqi";
 import { useAppState } from "../states/app-state";
 
+async function getRespJson(resp: Response) {
+  // biome-ignore lint/suspicious/noExplicitAny: any
+  let data = {} as any;
+  try {
+    data = await resp.json();
+  } catch {
+    // ignore
+  }
+  return data;
+}
+
 class Req {
   private readonly o: Feqi;
 
@@ -17,21 +28,30 @@ class Req {
         ],
         response: [
           async (resp, ctx) => {
+            if (resp.ok) {
+              return resp;
+            }
+
+            const data = await getRespJson(resp);
+
             if (resp.status === 401) {
-              try {
-                const data = await resp.json();
-                if (data.code === "deprecated_api_key") {
-                  const [state, actions] = useAppState();
-                  await actions.refresh();
-                  ctx.request.headers.set(
-                    "Authorization",
-                    `Bearer ${state.accessToken}`
-                  );
-                  return fetch(ctx.request);
+              const [state, actions] = useAppState();
+              if (state.refreshToken && data.code === "deprecated_api_key") {
+                await actions.refresh();
+                ctx.request.headers.set(
+                  "Authorization",
+                  `Bearer ${state.accessToken}`
+                );
+                const reResp = await fetch(ctx.request);
+                if (reResp.ok) {
+                  return reResp;
                 }
-              } catch {
-                // ignore
+                actions.logout();
               }
+            }
+
+            if (data.message) {
+              throw new Error(data.message);
             }
 
             return resp;

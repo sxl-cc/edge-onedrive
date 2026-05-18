@@ -49,10 +49,11 @@ export function FolderView(props: { path: string; refetchSignal: number }) {
 
   return (
     <DriveItemsView
+      error={query.isError}
       hasMore={Boolean(query.data?.next_token)}
       items={query.data?.items || []}
       itemUrl={(item) =>
-        `${normalizeUrlPath(location.pathname, item.name)}?type=${item.is_folder ? "folder" : "file"}`
+        `${normalizeUrlPath(location.pathname, encodeURIComponent(item.name))}?type=${item.is_folder ? "folder" : "file"}`
       }
       loading={query.isLoading}
       onLoadMore={async () => {

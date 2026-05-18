@@ -3,7 +3,7 @@ import { useNavigate } from "@solidjs/router";
 export default function Index() {
   const $n = useNavigate();
 
-  $n("/v/", {
+  $n("/v?type=folder", {
     replace: true,
   });
 

@@ -80,8 +80,8 @@ importers:
         specifier: ^0.16.1
         version: 0.16.1(solid-js@1.9.12)
       feqi:
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       solid-js:
         specifier: ^1.9.12
         version: 1.9.12
@@ -89,8 +89,8 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1(solid-js@1.9.12)
       solid-tiny-query:
-        specifier: ^0.8.1
-        version: 0.8.1(solid-js@1.9.12)
+        specifier: ^0.9.1
+        version: 0.9.1(solid-js@1.9.12)
       solid-tiny-ui:
         specifier: https://pkg.pr.new/sxl-cc/solid-tiny-ui/solid-tiny-ui@3c2573b
         version: https://pkg.pr.new/sxl-cc/solid-tiny-ui/solid-tiny-ui@3c2573b(solid-js@1.9.12)
@@ -1478,8 +1478,8 @@ packages:
       picomatch:
         optional: true
 
-  feqi@0.1.0:
-    resolution: {integrity: sha512-GKAJ9geFhaEHr2ZlHwYkFtLB4J8h6whpQqFg0QzTkKGiePXo9te3KEEDTSOlt79QJx0KSBfQJZUtmVBVN6xMFg==}
+  feqi@0.2.0:
+    resolution: {integrity: sha512-D4F9CYE7IWUKZAhdz3QeNx/3WFehCyr2ngjMbciyLiIco4/XxGMIb4bmpfuJBwS4lMkIkIux+beJwHnmQmSG7w==}
     engines: {node: '>=18'}
 
   fill-range@7.1.1:
@@ -2040,8 +2040,8 @@ packages:
     peerDependencies:
       solid-js: ^1.9.7
 
-  solid-tiny-query@0.8.1:
-    resolution: {integrity: sha512-SeH4GN3n8SALInHJthp6SRoC6V+Yu6atfqbsV1XzRMmYpLIY93QSYdcdPxMNpGbnAQg/60lPWAHjLb1iKewsqA==}
+  solid-tiny-query@0.9.1:
+    resolution: {integrity: sha512-ILmkgifTEXlPidL3DedEAndcXCYgkGA+i0jBkWxQFl0koxaWHc2K5fe0zDruBsgW/37WZYFp3Rh7LEdFsJERcw==}
     peerDependencies:
       solid-js: ^1.9.7
 
@@ -3489,7 +3489,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.4
 
-  feqi@0.1.0: {}
+  feqi@0.2.0: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -4010,7 +4010,7 @@ snapshots:
       solid-js: 1.9.12
       solid-tiny-utils: 0.12.0(solid-js@1.9.12)
 
-  solid-tiny-query@0.8.1(solid-js@1.9.12):
+  solid-tiny-query@0.9.1(solid-js@1.9.12):
     dependencies:
       solid-js: 1.9.12
       solid-tiny-context: 0.3.1(solid-js@1.9.12)

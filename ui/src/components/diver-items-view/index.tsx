@@ -108,6 +108,7 @@ export function DriveItemsView(props: {
   loading?: boolean;
   hasMore?: boolean;
   onLoadMore?: () => boolean | Promise<boolean>;
+  error?: boolean;
 }) {
   const t = useTranslator();
 
@@ -216,7 +217,7 @@ export function DriveItemsView(props: {
               fallback={
                 <For each={list(5)}>{() => <DriveItemRowsSkeleton />}</For>
               }
-              when={!props.loading}
+              when={!(props.loading || props.error)}
             >
               <For each={props.items}>
                 {(driveItem, index) => (
