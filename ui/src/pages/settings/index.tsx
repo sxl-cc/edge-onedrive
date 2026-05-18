@@ -6,11 +6,14 @@ import {
   Field,
   PasswordInput,
   SpinRing,
-  Textarea,
   TextField,
   useToaster,
 } from "solid-tiny-ui";
 import { useTranslator } from "../../i18n";
+import {
+  createOneDriveAuthorizationRequest,
+  ONEDRIVE_AUTH_SESSION_STORAGE_KEY,
+} from "../../lib/pkce";
 import { req } from "../../utils/req";
 
 interface AuthSettingsState {
@@ -21,12 +24,9 @@ interface AuthSettingsState {
 
 interface SettingsFormState {
   confirmPassword: string;
-  generatingKey: boolean;
   newApiKey: string;
   password: string;
-  refreshToken: string;
   savingLogin: boolean;
-  savingRefreshToken: boolean;
   username: string;
 }
 
@@ -38,12 +38,6 @@ async function updateLoginInfo(username: string, password: string) {
   await req.post("/api/v1/auth/change-login-info", {
     username,
     password,
-  });
-}
-
-async function updateMsGraphRefreshToken(refreshToken: string) {
-  await req.post("/api/v1/auth/ms-graph-refresh-token", {
-    refresh_token: refreshToken,
   });
 }
 
@@ -90,11 +84,8 @@ export default function SettingsPage() {
     username: "",
     password: "",
     confirmPassword: "",
-    refreshToken: "",
     newApiKey: "",
     savingLogin: false,
-    savingRefreshToken: false,
-    generatingKey: false,
   });
 
   createEffect(() => {
@@ -141,31 +132,7 @@ export default function SettingsPage() {
     }
   };
 
-  const saveRefreshToken = async () => {
-    const token = form.refreshToken.trim();
-
-    if (!token) {
-      toaster.error(t("settings.refreshTokenRequired"));
-      return;
-    }
-
-    setForm("savingRefreshToken", true);
-
-    try {
-      await updateMsGraphRefreshToken(token);
-      setForm("refreshToken", "");
-      await query.refetch();
-      toaster.success(t("settings.refreshTokenSaved"));
-    } catch (error) {
-      toaster.error(getErrorMessage(error));
-    } finally {
-      setForm("savingRefreshToken", false);
-    }
-  };
-
   const generateApiKey = async () => {
-    setForm("generatingKey", true);
-
     try {
       const data = await createApiKey();
       setForm("newApiKey", data.key);
@@ -173,8 +140,6 @@ export default function SettingsPage() {
       toaster.success(t("settings.apiKeyGenerated"));
     } catch (error) {
       toaster.error(getErrorMessage(error));
-    } finally {
-      setForm("generatingKey", false);
     }
   };
 
@@ -185,6 +150,20 @@ export default function SettingsPage() {
 
     await navigator.clipboard.writeText(form.newApiKey);
     toaster.success(t("settings.apiKeyCopied"));
+  };
+
+  const beginOneDriveAuthorization = async () => {
+    try {
+      const { authorizationUrl, sessionState } =
+        await createOneDriveAuthorizationRequest();
+      sessionStorage.setItem(
+        ONEDRIVE_AUTH_SESSION_STORAGE_KEY,
+        JSON.stringify(sessionState)
+      );
+      window.location.href = authorizationUrl;
+    } catch (error) {
+      toaster.error(getErrorMessage(error));
+    }
   };
 
   return (
@@ -211,64 +190,56 @@ export default function SettingsPage() {
           </header>
 
           <form
-            class="mb-3xl"
+            class="mb-3xl flex flex-col gap-lg"
             onSubmit={async (event) => {
               event.preventDefault();
               await saveLoginInfo();
             }}
           >
-            <div class="grid gap-lg">
-              <Field>
-                <Field.Title>{t("settings.username")}</Field.Title>
-                <TextField
-                  disabled={form.savingLogin || query.isLoading}
-                  onChange={(value) => setForm("username", value)}
-                  placeholder="admin"
-                  size="large"
-                  value={form.username}
-                />
-              </Field>
+            <Field>
+              <Field.Title>{t("settings.username")}</Field.Title>
+              <TextField
+                disabled={form.savingLogin || query.isLoading}
+                onChange={(value) => setForm("username", value)}
+                placeholder="admin"
+                size="large"
+                value={form.username}
+              />
+            </Field>
 
-              <Field>
-                <Field.Title>{t("settings.newPassword")}</Field.Title>
-                <PasswordInput
-                  disabled={form.savingLogin}
-                  onChange={(value) => setForm("password", value)}
-                  placeholder={t("settings.passwordPlaceholder")}
-                  size="large"
-                  value={form.password}
-                />
-              </Field>
+            <Field>
+              <Field.Title>{t("settings.newPassword")}</Field.Title>
+              <PasswordInput
+                disabled={form.savingLogin}
+                onChange={(value) => setForm("password", value)}
+                placeholder={t("settings.passwordPlaceholder")}
+                size="large"
+                value={form.password}
+              />
+            </Field>
 
-              <Field>
-                <Field.Title>{t("settings.confirmPassword")}</Field.Title>
-                <PasswordInput
-                  disabled={form.savingLogin}
-                  onChange={(value) => setForm("confirmPassword", value)}
-                  placeholder={t("settings.confirmPasswordPlaceholder")}
-                  size="large"
-                  value={form.confirmPassword}
-                />
-              </Field>
+            <Field>
+              <Field.Title>{t("settings.confirmPassword")}</Field.Title>
+              <PasswordInput
+                disabled={form.savingLogin}
+                onChange={(value) => setForm("confirmPassword", value)}
+                placeholder={t("settings.confirmPasswordPlaceholder")}
+                size="large"
+                value={form.confirmPassword}
+              />
+            </Field>
 
-              <div>
-                <Button loading={form.savingLogin} type="submit">
-                  {t("settings.saveLogin")}
-                </Button>
-              </div>
+            <div>
+              <Button onClick={saveLoginInfo} type="button">
+                {t("settings.saveLogin")}
+              </Button>
             </div>
           </form>
 
-          <form
-            class="mb-3xl"
-            onSubmit={async (event) => {
-              event.preventDefault();
-              await saveRefreshToken();
-            }}
-          >
+          <section class="mb-3xl">
             <Field>
               <Field.Title align="center">
-                <div>{t("settings.msGraphRefreshToken")}</div>
+                <div>{t("settings.oneDriveAuthorization")}</div>
                 <StatusPill
                   active={Boolean(query.data?.has_ms_graph_refresh_token)}
                   label={
@@ -279,23 +250,15 @@ export default function SettingsPage() {
                 />
               </Field.Title>
               <Field.Description>
-                {t("settings.refreshTokenDescription")}
+                {t("settings.oneDriveAuthorizationDescription")}
               </Field.Description>
-              <Textarea
-                autosize
-                disabled={form.savingRefreshToken}
-                onChange={(value) => setForm("refreshToken", value)}
-                placeholder={t("settings.refreshTokenPlaceholder")}
-                rows={4}
-                value={form.refreshToken}
-              />
               <div class="mt-lg">
-                <Button loading={form.savingRefreshToken} type="submit">
-                  {t("settings.saveRefreshToken")}
+                <Button onClick={beginOneDriveAuthorization}>
+                  {t("settings.authorizeOneDrive")}
                 </Button>
               </div>
             </Field>
-          </form>
+          </section>
 
           <section>
             <Field>
@@ -317,7 +280,7 @@ export default function SettingsPage() {
 
             <div class="mt-lg">
               <div class="flex flex-wrap items-center gap-md">
-                <Button loading={form.generatingKey} onClick={generateApiKey}>
+                <Button onClick={generateApiKey}>
                   {t("settings.generateApiKey")}
                 </Button>
                 <Show when={form.newApiKey}>
@@ -328,7 +291,7 @@ export default function SettingsPage() {
               </div>
 
               <Show when={form.newApiKey}>
-                <pre class="m-0 mt-lg overflow-x-auto rounded-5 bg-neutral-1 p-md text-neutral-9 text-sm leading-6">
+                <pre class="c-neutral-9 fs-sm m-0 mt-lg overflow-x-auto rounded-5 bg-neutral-1/40 p-md">
                   {form.newApiKey}
                 </pre>
               </Show>

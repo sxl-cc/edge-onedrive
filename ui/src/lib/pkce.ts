@@ -1,109 +1,62 @@
 import { req } from "../utils/req";
 
-export interface OAuthDebugForm {
-  authorityHost: string;
-  clientId: string;
-  clientSecret: string;
-  redirectUri: string;
-  scopes: string;
-  tenant: string;
-}
-
-export interface OAuthDebugSession {
-  authorityHost: string;
-  clientId: string;
-  clientSecret: string;
+export interface OneDriveAuthorizationSession {
   createdAt: number;
   redirectUri: string;
-  scopes: string;
   state: string;
-  tenant: string;
 }
 
-export const PKCE_FORM_STORAGE_KEY = "oauth-debug-form";
-export const PKCE_SESSION_STORAGE_KEY = "oauth-debug-session";
+interface OneDriveAuthorizationUrlResp {
+  authorization_url: string;
+  redirect_uri: string;
+  state: string;
+}
 
-function randomString(byteLength = 32) {
-  const bytes = crypto.getRandomValues(new Uint8Array(byteLength));
-  let binary = "";
+export interface OneDriveAuthorizationResult {
+  expires_at: string;
+  scope: string;
+  token_type: string;
+}
 
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
+export const ONEDRIVE_AUTH_SESSION_STORAGE_KEY = "onedrive-auth-session";
+
+export function createOneDriveRedirectUri() {
+  const fallbackRedirect = "http://localhost:5122/settings/onedrive/callback";
+
+  if (typeof window === "undefined") {
+    return fallbackRedirect;
   }
 
-  return btoa(binary)
-    .replaceAll("+", "-")
-    .replaceAll("/", "_")
-    .replaceAll("=", "");
+  return `${window.location.origin}/settings/onedrive/callback`;
 }
 
-function createAuthorityBase(authorityHost: string, tenant: string) {
-  const normalizedHost = authorityHost.trim().replace(/\/+$/, "");
-  const normalizedTenant = tenant.trim() || "common";
-  return `https://${normalizedHost}/${normalizedTenant}/oauth2/v2.0`;
-}
-
-export function createDefaultPkceForm(): OAuthDebugForm {
-  const fallbackRedirect = "http://localhost:5122/debug/pkce/callback";
-  const redirectUri =
-    typeof window === "undefined"
-      ? fallbackRedirect
-      : `${window.location.origin}/debug/pkce/callback`;
-
-  return {
-    authorityHost: "login.microsoftonline.com",
-    tenant: "common",
-    clientId: "",
-    clientSecret: "",
-    redirectUri,
-    scopes: "openid profile offline_access Files.Read",
-  };
-}
-
-export function createAuthorizationRequest(form: OAuthDebugForm) {
-  const state = randomString(24);
-
-  const sessionState: OAuthDebugSession = {
-    authorityHost: form.authorityHost.trim(),
-    tenant: form.tenant.trim() || "common",
-    clientId: form.clientId.trim(),
-    clientSecret: form.clientSecret,
-    redirectUri: form.redirectUri.trim(),
-    scopes: form.scopes.trim(),
-    state,
-    createdAt: Date.now(),
-  };
-
-  const url = new URL(
-    `${createAuthorityBase(form.authorityHost, form.tenant)}/authorize`
+export async function createOneDriveAuthorizationRequest() {
+  const data = await req.post<OneDriveAuthorizationUrlResp>(
+    "/api/v1/auth/ms-graph-authorization-url",
+    {
+      redirect_uri: createOneDriveRedirectUri(),
+    }
   );
 
-  url.searchParams.set("client_id", sessionState.clientId);
-  url.searchParams.set("response_type", "code");
-  url.searchParams.set("redirect_uri", sessionState.redirectUri);
-  url.searchParams.set("response_mode", "query");
-  url.searchParams.set("scope", sessionState.scopes);
-  url.searchParams.set("state", state);
-
   return {
-    sessionState,
-    authorizationUrl: url.toString(),
+    authorizationUrl: data.authorization_url,
+    sessionState: {
+      createdAt: Date.now(),
+      redirectUri: data.redirect_uri,
+      state: data.state,
+    },
   };
 }
 
-export async function exchangeAuthorizationCode(
-  sessionState: OAuthDebugSession,
+export async function exchangeOneDriveAuthorizationCode(
+  sessionState: OneDriveAuthorizationSession,
   code: string
 ) {
-  const data = await req.post("/api/v1/debug/pkce/token", {
-    authorityHost: sessionState.authorityHost,
-    tenant: sessionState.tenant,
-    clientId: sessionState.clientId,
-    clientSecret: sessionState.clientSecret,
-    redirectUri: sessionState.redirectUri,
-    scopes: sessionState.scopes,
-    code,
-  });
-
-  return data;
+  return await req.post<OneDriveAuthorizationResult>(
+    "/api/v1/auth/ms-graph-authorization-code",
+    {
+      code,
+      redirect_uri: sessionState.redirectUri,
+    }
+  );
 }

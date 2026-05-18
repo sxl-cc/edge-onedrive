@@ -2,7 +2,6 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, createSignal, Show } from "solid-js";
 import { createQuery } from "solid-tiny-query";
 import { Button, SpinRing } from "solid-tiny-ui";
-import { createWatch } from "solid-tiny-utils";
 import type { MsGraphDriveItem } from "~api";
 import { normalizeUrlPath } from "../../utils/path";
 import { req } from "../../utils/req";
@@ -23,6 +22,10 @@ export default function IndexPage() {
 
   const $n = useNavigate();
 
+  const isSearchParamsOk = createMemo(() =>
+    ["file", "folder"].includes(searchParams.type ?? "")
+  );
+
   const query = createQuery({
     queryKey: () => ["item-type", params.path],
     queryFn: async ({ queryKey }) => {
@@ -30,23 +33,16 @@ export default function IndexPage() {
       return res;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: () => !["file", "folder"].includes(searchParams.type ?? ""),
+    enabled: () => !isSearchParamsOk(),
   });
 
   const pathType = createMemo(() => {
-    if (["file", "folder"].includes(searchParams.type ?? "")) {
+    if (isSearchParamsOk()) {
       return searchParams.type;
     }
 
     return query.data;
   });
-
-  createWatch(
-    () => [query.isLoading, pathType()],
-    ([load, t]) => {
-      console.log(load, t);
-    }
-  );
 
   return (
     <div class="relative flex h-full flex-col">
@@ -82,9 +78,7 @@ export default function IndexPage() {
               <SpinRing />
             </div>
           }
-          when={
-            !query.isLoading && ["file", "folder"].includes(pathType() ?? "")
-          }
+          when={!query.isLoading && pathType()}
         >
           <Show
             fallback={

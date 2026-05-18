@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import type { AppEnv } from "../..";
 import { registerV1AuthRoutes } from "./auth";
-import { registerV1DebugRoutes } from "./debug";
 import { registerV1DriveRoutes } from "./drive";
 
 const v1 = new Hono<AppEnv>();
@@ -14,7 +13,6 @@ v1.get("/hello", (c) =>
 
 registerV1AuthRoutes(v1);
 registerV1DriveRoutes(v1);
-registerV1DebugRoutes(v1);
 
 export type V1App = typeof v1;
 

@@ -132,8 +132,6 @@ export async function listDir(
   const p = normalizePath(payload.path);
   const path = `/v1.0/me/drive/root${p ? `:${p}:` : ""}/children`;
 
-  console.log(path);
-
   const searchParams = new URLSearchParams({
     $select:
       "name,size,createdDateTime,lastModifiedDateTime,folder,file,image,thumbnails",

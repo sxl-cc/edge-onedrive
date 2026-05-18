@@ -1,5 +1,7 @@
 import { sValidator } from "@hono/standard-validator";
 import { type } from "arktype";
+import { env } from "hono/adapter";
+import { nanoid } from "nanoid";
 import { formatToIsoZulu } from "time-core";
 import {
   generateApiKey,
@@ -23,12 +25,18 @@ const refreshInfo = type({
   refresh_token: "string",
 });
 
-const msGraphRefreshTokenInfo = type({
-  refresh_token: "string > 0",
+const msGraphAuthorizationInfo = type({
+  redirect_uri: "string > 0",
+});
+const msGraphAuthorizationCodeInfo = type({
+  code: "string > 0",
+  redirect_uri: "string > 0",
 });
 
 const ACCESS_TOKEN_EXPIRATION = 60 * 60 * 1000; // 1 hour
 const REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 1 week
+const MS_GRAPH_AUTH_SCOPES =
+  "openid profile offline_access Files.ReadWrite.All";
 const ERROR_TOKEN = new ApiError("Invalid token", {
   status: 401,
   details: null,
@@ -48,6 +56,12 @@ async function setNewTokens(kv: KeyValueStorage) {
     refresh_token,
     expires_at: formatToIsoZulu(now + ACCESS_TOKEN_EXPIRATION),
   };
+}
+
+function createAuthorityBase(entraIdEndpoint: string | undefined) {
+  const endpoint =
+    entraIdEndpoint?.trim() || "https://login.microsoftonline.com";
+  return `${endpoint.replace(/\/+$/, "")}/common/oauth2/v2.0`;
 }
 
 export function registerV1AuthRoutes(v1: V1App) {
@@ -130,31 +144,57 @@ export function registerV1AuthRoutes(v1: V1App) {
   );
 
   v1.post(
-    "/auth/ms-graph-refresh-token",
-    sValidator("json", msGraphRefreshTokenInfo),
-    async (c) => {
+    "/auth/ms-graph-authorization-url",
+    sValidator("json", msGraphAuthorizationInfo),
+    (c) => {
       const data = c.req.valid("json");
-      const kv = c.get("kv");
-      const oldToken = await kv.get("refresh_token");
-      await kv.set("refresh_token", data.refresh_token);
-      try {
-        const sdk = await createMsGraphSDK(c);
-        await sdk.refreshAllTokens(true);
-      } catch (error) {
-        if (oldToken) {
-          await kv.set("refresh_token", oldToken);
-        } else {
-          await kv.delete("refresh_token");
-        }
+      const { CLIENT_ID, ENTRA_ID_ENDPOINT } = env(c);
 
-        throw new ApiError("Failed to verify refresh token", {
+      if (!CLIENT_ID?.trim()) {
+        throw new ApiError("Missing Microsoft Graph client id", {
           status: 400,
-          details: error instanceof Error ? error.message : null,
-          code: "failed_to_verify_refresh_token",
+          details: null,
+          code: "missing_ms_graph_client_id",
         });
       }
 
-      return success(c);
+      const state = nanoid();
+      const url = new URL(
+        `${createAuthorityBase(ENTRA_ID_ENDPOINT)}/authorize`
+      );
+      url.searchParams.set("client_id", CLIENT_ID);
+      url.searchParams.set("response_type", "code");
+      url.searchParams.set("redirect_uri", data.redirect_uri);
+      url.searchParams.set("response_mode", "query");
+      url.searchParams.set("scope", MS_GRAPH_AUTH_SCOPES);
+      url.searchParams.set("state", state);
+
+      return c.json({
+        authorization_url: url.toString(),
+        redirect_uri: data.redirect_uri,
+        scopes: MS_GRAPH_AUTH_SCOPES,
+        state,
+      });
+    }
+  );
+
+  v1.post(
+    "/auth/ms-graph-authorization-code",
+    sValidator("json", msGraphAuthorizationCodeInfo),
+    async (c) => {
+      const data = c.req.valid("json");
+      const sdk = await createMsGraphSDK(c);
+      const tokens = await sdk.authByCode({
+        code: data.code,
+        redirectUri: data.redirect_uri,
+        scopes: MS_GRAPH_AUTH_SCOPES,
+      });
+
+      return c.json({
+        expires_at: formatToIsoZulu(Date.now() + tokens.expires_in * 1000),
+        scope: tokens.scope,
+        token_type: tokens.token_type,
+      });
     }
   );
 
