@@ -6,7 +6,7 @@ describe("PBKDF2 password hashing", () => {
     const hashed = await safeHash("correct horse battery staple");
 
     expect(hashed).toMatch(
-      /^pbkdf2-sha256\$600000\$[A-Za-z\d+/=]+\$[A-Za-z\d+/=]+$/
+      /^pbkdf2-sha256\$100000\$[A-Za-z\d+/=]+\$[A-Za-z\d+/=]+$/
     );
     await expect(
       verifySafeHash("correct horse battery staple", hashed)

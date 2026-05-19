@@ -1,7 +1,7 @@
 import crypto from "uncrypto";
 
 const SALT_LENGTH = 16;
-const ITERATIONS = 600_000;
+const ITERATIONS = 100_000;
 const HASH_LENGTH = 32;
 const HASH_ALGORITHM = "pbkdf2-sha256";
 const HASH_SEGMENT_COUNT = 4;
