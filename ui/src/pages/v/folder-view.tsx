@@ -43,6 +43,7 @@ export function FolderView(props: { path: string; refetchSignal: number }) {
     () => [props.refetchSignal],
     () => {
       query.refetch();
+      loadingId = "";
     },
     { defer: true }
   );
