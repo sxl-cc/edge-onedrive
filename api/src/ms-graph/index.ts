@@ -10,7 +10,7 @@ export type MsGraphTokensChangeHandler = (tokens: {
   accessToken: string;
   refreshToken: string;
   expiresAt: number;
-}) => void;
+}) => void | Promise<void>;
 
 export interface MsGraphSDKParameters {
   accessToken?: string;
@@ -70,7 +70,7 @@ export class MsGraphSDK {
     };
   }
 
-  private changeTokens(tokens: {
+  private async changeTokens(tokens: {
     accessToken: string;
     refreshToken: string;
     expiresIn: number;
@@ -78,7 +78,7 @@ export class MsGraphSDK {
     this.accessToken = tokens.accessToken;
     this.refreshToken = tokens.refreshToken;
     this.tokenExpiresAt = Date.now() + tokens.expiresIn * 1000;
-    this.onTokensChange({
+    await this.onTokensChange({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       expiresAt: this.tokenExpiresAt,
@@ -87,7 +87,7 @@ export class MsGraphSDK {
 
   async authByCode(payload: MsGraphAuthByCodePayload) {
     const res = await authByCode(this, payload);
-    this.changeTokens({
+    await this.changeTokens({
       accessToken: res.access_token,
       refreshToken: res.refresh_token,
       expiresIn: res.expires_in,
@@ -151,7 +151,7 @@ export class MsGraphSDK {
     }
 
     const res = await refreshToken(this);
-    this.changeTokens({
+    await this.changeTokens({
       accessToken: res.access_token,
       refreshToken: res.refresh_token,
       expiresIn: res.expires_in,

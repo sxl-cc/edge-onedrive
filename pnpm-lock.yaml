@@ -15,9 +15,6 @@ importers:
       '@types/node':
         specifier: ^25.7.0
         version: 25.7.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -71,9 +68,6 @@ importers:
         specifier: workspace:*
         version: link:../../api
     devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^4.20260519.1
-        version: 4.20260519.1
       wrangler:
         specifier: ^4.71.0
         version: 4.92.0(@cloudflare/workers-types@4.20260519.1)
@@ -2180,9 +2174,6 @@ packages:
     peerDependencies:
       oxc-parser: '>=0.98.0'
 
-  package-json-from-dist@1.0.1:
-    resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
-
   package-manager-detector@1.6.0:
     resolution: {integrity: sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==}
 
@@ -2252,11 +2243,6 @@ packages:
   reusify@1.1.0:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
-
-  rimraf@6.1.3:
-    resolution: {integrity: sha512-LKg+Cr2ZF61fkcaK1UdkH2yEBBKnYjTyWzTJT6KNPcSPaiT7HSdhtMXQuN5wkTX0Xu72KQ1l8S42rlmexS2hSA==}
-    engines: {node: 20 || >=22}
-    hasBin: true
 
   rolldown-plugin-dts@0.25.0:
     resolution: {integrity: sha512-GE3uDZgUuA9l6g+1u928TRmadd5IVhaWiwpWast2kCyLv9tYJJCC6E5HHkV0HGmwC5ZL73xh12/PRZI+KZ2vdQ==}
@@ -3057,7 +3043,8 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20260515.1':
     optional: true
 
-  '@cloudflare/workers-types@4.20260519.1': {}
+  '@cloudflare/workers-types@4.20260519.1':
+    optional: true
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -4495,8 +4482,6 @@ snapshots:
       magic-regexp: 0.10.0
       oxc-parser: 0.115.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
 
-  package-json-from-dist@1.0.1: {}
-
   package-manager-detector@1.6.0: {}
 
   parse5@7.3.0:
@@ -4550,11 +4535,6 @@ snapshots:
   resolve-pkg-maps@1.0.0: {}
 
   reusify@1.1.0: {}
-
-  rimraf@6.1.3:
-    dependencies:
-      glob: 13.0.6
-      package-json-from-dist: 1.0.1
 
   rolldown-plugin-dts@0.25.0(rolldown@1.0.1)(typescript@6.0.3):
     dependencies:
