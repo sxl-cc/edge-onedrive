@@ -15,6 +15,8 @@ async function getRespJson(resp: Response) {
 class Req {
   private readonly o: Feqi;
 
+  onLogout?: () => void;
+
   constructor(baseURL?: string) {
     this.o = createFeqi({
       baseURL,
@@ -46,8 +48,9 @@ class Req {
                 if (reResp.ok) {
                   return reResp;
                 }
-                actions.logout();
               }
+              actions.logout();
+              this.onLogout?.();
             }
 
             if (data.message) {

@@ -8,9 +8,8 @@ const apiKeyInvalid = new ApiError("API key is invalid", {
   details: null,
   code: "invalid_api_key",
 });
-export function authMiddleware(
-  skip?: (c: Context) => Promise<boolean> | boolean
-) {
+
+export function auth(skip?: (c: Context) => Promise<boolean> | boolean) {
   return async (c: Context, next: Next) => {
     if (await skip?.(c)) {
       return next();

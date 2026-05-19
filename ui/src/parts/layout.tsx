@@ -1,20 +1,11 @@
 import { A, useNavigate } from "@solidjs/router";
 import type { JSX } from "solid-js";
-import { createWatch } from "solid-tiny-utils";
-import { useAppState } from "../states/app-state";
+import { req } from "../utils/req";
 
 export function Layout(props: { children: JSX.Element }) {
-  const [state] = useAppState();
   const $n = useNavigate();
+  req.onLogout = () => $n("/login");
 
-  createWatch(
-    () => [state.accessToken] as const,
-    ([accessToken]) => {
-      if (!accessToken) {
-        $n("/login");
-      }
-    }
-  );
   return (
     <div class="flex h-screen w-full flex-col lg:mx-auto lg:w-800px">
       <header class="flex h-68px items-end pb-10px">

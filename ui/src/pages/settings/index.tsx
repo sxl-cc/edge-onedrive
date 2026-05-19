@@ -75,11 +75,7 @@ function StatusPill(props: { active: boolean; label: string }) {
 export default function SettingsPage() {
   const toaster = useToaster();
   const t = useTranslator();
-  const query = createQuery({
-    queryKey: () => ["auth-settings"],
-    queryFn: getAuthSettings,
-    staleTime: 0,
-  });
+  const query = createQuery(getAuthSettings);
   const [form, setForm] = createStore<SettingsFormState>({
     username: "",
     password: "",

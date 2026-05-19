@@ -3,7 +3,6 @@ import { env } from "hono/adapter";
 import { cors } from "hono/cors";
 import v1 from "./api/v1";
 import type { KeyValueStorage } from "./kv-storage";
-import { authMiddleware } from "./middleware/auth";
 import { createMsGraphSDK, fullPath } from "./ms-graph/client";
 import { ApiError } from "./utils/error";
 
@@ -16,6 +15,7 @@ export interface AppEnv extends Env {
     GRAPH_ENDPOINT: string;
     CORS_ORIGIN: string;
     DOWNLOAD_PROXY: boolean;
+    ENABLE_GUEST: boolean;
   };
   Variables: {
     kv: KeyValueStorage;
@@ -35,36 +35,25 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
     await next();
   });
 
-  app
-    .use(
-      "/api/*",
-      cors({
-        origin: (origin, c) => {
-          const allowedOrigin: string | undefined = env(c).CORS_ORIGIN;
-          if (allowedOrigin?.trim()) {
-            const origins = allowedOrigin.split(",").map((o) => o.trim());
-            if (origins.includes("*")) {
-              return "*";
-            }
-            if (origins.includes(origin)) {
-              return origin;
-            }
+  app.use(
+    "/api/*",
+    cors({
+      origin: (origin, c) => {
+        const allowedOrigin: string | undefined = env(c).CORS_ORIGIN;
+        if (allowedOrigin?.trim()) {
+          const origins = allowedOrigin.split(",").map((o) => o.trim());
+          if (origins.includes("*")) {
+            return "*";
           }
+          if (origins.includes(origin)) {
+            return origin;
+          }
+        }
 
-          return "*";
-        },
-      })
-    )
-    .use(
-      authMiddleware((c) => {
-        const path = c.req.path;
-        return (
-          path === "/api/v1/auth/login" ||
-          path === "/api/v1/auth/refresh" ||
-          path === "/api/v1/auth/setup"
-        );
-      })
-    );
+        return "*";
+      },
+    })
+  );
 
   app.get("/", (c) => c.text("edge-onedrive api"));
 

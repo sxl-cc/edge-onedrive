@@ -11,6 +11,7 @@ import {
   verifySafeHash,
 } from "../../auth";
 import type { KeyValueStorage } from "../../kv-storage";
+import { auth } from "../../middleware/auth";
 import { createMsGraphSDK } from "../../ms-graph/client";
 import { ApiError } from "../../utils/error";
 import { success } from "../../utils/resp";
@@ -117,7 +118,7 @@ export function registerV1AuthRoutes(v1: V1App) {
     return c.json(tokens);
   });
 
-  v1.get("/auth/settings", async (c) => {
+  v1.get("/auth/settings", auth(), async (c) => {
     const kv = c.get("kv");
     const username = await kv.get("username");
     const refreshToken = await kv.get("refresh_token");
@@ -132,6 +133,7 @@ export function registerV1AuthRoutes(v1: V1App) {
 
   v1.post(
     "/auth/change-login-info",
+    auth(),
     sValidator("json", loginInfo),
     async (c) => {
       const data = c.req.valid("json");
@@ -145,6 +147,7 @@ export function registerV1AuthRoutes(v1: V1App) {
 
   v1.post(
     "/auth/ms-graph-authorization-url",
+    auth(),
     sValidator("json", msGraphAuthorizationInfo),
     (c) => {
       const data = c.req.valid("json");
@@ -180,6 +183,7 @@ export function registerV1AuthRoutes(v1: V1App) {
 
   v1.post(
     "/auth/ms-graph-authorization-code",
+    auth(),
     sValidator("json", msGraphAuthorizationCodeInfo),
     async (c) => {
       const data = c.req.valid("json");
@@ -198,7 +202,7 @@ export function registerV1AuthRoutes(v1: V1App) {
     }
   );
 
-  v1.post("/auth/new-key", async (c) => {
+  v1.post("/auth/new-key", auth(), async (c) => {
     const newKey = generateApiKey(0);
     const kv = c.get("kv");
 
@@ -240,4 +244,10 @@ export function registerV1AuthRoutes(v1: V1App) {
       is_setup: Boolean(username && hashedPassword),
     });
   });
+
+  v1.get("/auth/guest", async (c) =>
+    c.json({
+      guest: env(c).ENABLE_GUEST,
+    })
+  );
 }

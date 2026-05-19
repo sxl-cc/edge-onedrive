@@ -16,12 +16,35 @@ export interface MsGraphDriveItemCommon {
 }
 
 export interface MsGraphDriveItemFile extends MsGraphDriveItemCommon {
+  category: "image" | "video" | "document" | "unknown";
   download_url: string;
   is_folder: false;
   mime_type: string;
 }
 
+export interface MsGraphDriveItemDocument extends MsGraphDriveItemFile {
+  category: "document";
+  thumbnail: {
+    url: string;
+    height: number;
+    width: number;
+  };
+}
+
 export interface MsGraphDriveItemImage extends MsGraphDriveItemFile {
+  category: "image";
+  height: number;
+  thumbnail: {
+    url: string;
+    height: number;
+    width: number;
+  };
+  width: number;
+}
+
+export interface MsGraphDriveItemVideo extends MsGraphDriveItemFile {
+  category: "video";
+  duration: number;
   height: number;
   thumbnail: {
     url: string;
@@ -39,7 +62,9 @@ export interface MsGraphDriveItemFolder extends MsGraphDriveItemCommon {
 export type MsGraphDriveItem =
   | MsGraphDriveItemFile
   | MsGraphDriveItemFolder
-  | MsGraphDriveItemImage;
+  | MsGraphDriveItemImage
+  | MsGraphDriveItemVideo
+  | MsGraphDriveItemDocument;
 
 interface MsGraphRawDriveItem {
   "@microsoft.graph.downloadUrl"?: string;
@@ -64,6 +89,14 @@ interface MsGraphRawDriveItem {
       width: number;
     };
   }[];
+  video?: {
+    duration: number;
+    width: number;
+    height: number;
+    bitrate: number;
+    frameRate: number;
+    fourCC: string;
+  };
 }
 
 interface MsGraphListDriveResponse {
@@ -90,24 +123,39 @@ function transformDriveItem(
     };
   }
 
-  const file: MsGraphDriveItemFile = {
+  const file: Exclude<MsGraphDriveItem, MsGraphDriveItemFolder> = {
     ...common,
     is_folder: false,
     mime_type: item.file?.mimeType || "application/octet-stream",
     download_url: item["@microsoft.graph.downloadUrl"] || "",
+    category: "unknown",
   };
 
-  if (item.image) {
-    return {
-      ...file,
-      height: item.image.height,
-      width: item.image.width,
-      thumbnail: item.thumbnails?.[0]?.medium ?? {
-        url: "",
-        height: 0,
-        width: 0,
-      },
-    };
+  if (item.thumbnails?.[0]?.medium) {
+    const thumb = file as MsGraphDriveItemImage | MsGraphDriveItemVideo;
+    thumb.thumbnail = item.thumbnails[0].medium;
+  }
+
+  if (item.image?.width) {
+    const img = file as MsGraphDriveItemImage;
+    img.width = item.image.width;
+    img.height = item.image.height;
+    img.category = "image";
+  }
+
+  if (item.video?.duration) {
+    const video = file as MsGraphDriveItemVideo;
+    video.duration = item.video.duration;
+    video.width = item.video.width;
+    video.height = item.video.height;
+    video.category = "video";
+  }
+
+  if (file.category === "unknown") {
+    const doc = file as MsGraphDriveItemDocument;
+    if (doc.thumbnail) {
+      doc.category = "document";
+    }
   }
 
   return file;
@@ -134,7 +182,7 @@ export async function listDir(
 
   const searchParams = new URLSearchParams({
     $select:
-      "name,size,createdDateTime,lastModifiedDateTime,folder,file,image,thumbnails",
+      "name,size,createdDateTime,lastModifiedDateTime,folder,file,image,thumbnails,video",
     $top: `${payload.pageSize || 200}`,
     $skiptoken: payload.nextToken || "",
     $expand: "thumbnails($select=medium)",
@@ -174,7 +222,7 @@ export async function getItemDetails(
     // or use `select` instead of `$select`
     $select:
       select ||
-      "name,size,createdDateTime,lastModifiedDateTime,folder,file,content.downloadUrl,image,thumbnails",
+      "name,size,createdDateTime,lastModifiedDateTime,folder,file,content.downloadUrl,image,thumbnails,video",
     $expand: "thumbnails($select=medium)",
   });
 

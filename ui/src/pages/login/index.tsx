@@ -81,7 +81,7 @@ export default function LoginPage() {
       }
 
       await acts.login(name, pwd);
-      navigate("/v/", { replace: true });
+      navigate("/v?type=folder", { replace: true });
     } catch (error) {
       toaster.error(getErrorMessage(error));
     } finally {
@@ -139,7 +139,6 @@ export default function LoginPage() {
                 disabled={submitting()}
                 name="password"
                 onChange={setPassword}
-                placeholder={t("login.passwordPlaceholder")}
                 size="large"
                 value={password()}
               />
@@ -153,7 +152,6 @@ export default function LoginPage() {
                   disabled={submitting()}
                   name="confirm_password"
                   onChange={setConfirmPassword}
-                  placeholder={t("login.confirmPasswordPlaceholder")}
                   size="large"
                   value={confirmPassword()}
                 />

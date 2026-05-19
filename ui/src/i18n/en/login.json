@@ -1,12 +1,10 @@
 {
   "confirmPassword": "Confirm password",
-  "confirmPasswordPlaceholder": "Enter password again",
   "login": "Login",
   "loginDescription": "Continue with the configured local account.",
   "password": "Password",
   "passwordMinError": "Password must be at least 9 characters.",
   "passwordMismatchError": "The two passwords do not match.",
-  "passwordPlaceholder": "At least 9 characters",
   "setup": "Initialize account",
   "setupAndLogin": "Initialize and login",
   "setupDescription": "Set a local admin account before first use.",

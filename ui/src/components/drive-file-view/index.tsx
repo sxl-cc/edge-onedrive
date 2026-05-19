@@ -1,10 +1,11 @@
-import { Show } from "solid-js";
+import { createMemo, Show } from "solid-js";
 import { combineClass } from "solid-tiny-utils";
 import { formatToDateTime } from "time-core";
-import type { MsGraphDriveItem, MsGraphDriveItemFolder } from "~api";
+import type { MsGraphDriveItemFile, MsGraphDriveItemImage } from "~api";
 import { useTranslator } from "../../i18n";
 import { sizeToString } from "../../utils/size";
 import { getDriveItemIconClass } from "../diver-items-view/item-icon-cls";
+import { Picture } from "../picture";
 
 function Skeleton() {
   return (
@@ -18,16 +19,42 @@ function Skeleton() {
 }
 
 export function MsDriveItem(props: {
-  item?: Exclude<MsGraphDriveItem, MsGraphDriveItemFolder>;
+  item?: MsGraphDriveItemFile | MsGraphDriveItemImage;
   loading: boolean;
 }) {
   const t = useTranslator();
+
+  const isImage = createMemo(() => {
+    if (props.item && "thumbnail" in props.item) {
+      return props.item.thumbnail;
+    }
+  });
+
   return (
     <div class="flex w-full flex-col items-center justify-center gap-lg">
       <Show fallback={<Skeleton />} when={!props.loading && props.item}>
-        <div
-          class={combineClass(getDriveItemIconClass(props.item!), "text-70px")}
-        />
+        <div class="relative">
+          <div
+            class={combineClass(
+              getDriveItemIconClass(props.item!),
+              "text-70px"
+            )}
+          />
+          <div class="absolute inset-0">
+            <Show when={isImage()}>
+              {(img) => (
+                <Picture
+                  alt="thumbnail"
+                  class="h-full w-full"
+                  height={img().height}
+                  src={img().url}
+                  width={img().width}
+                />
+              )}
+            </Show>
+          </div>
+        </div>
+
         <div class="fs-lg c-text-heading">{props.item!.name}</div>
         <div class="fs-sm c-text-description">
           {sizeToString(props.item!.size)} -{" "}

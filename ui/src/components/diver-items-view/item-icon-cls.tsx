@@ -5,6 +5,15 @@ export function getDriveItemIconClass(item: MsGraphDriveItem) {
   if (item.is_folder) {
     return "i-ri:folder-6-line";
   }
+
+  if (item.category === "image") {
+    return "i-ri:image-2-line";
+  }
+
+  if (item.category === "video") {
+    return "i-ri:video-line";
+  }
+
   const fileType = detectFileType(item.mime_type, item.name);
   switch (fileType) {
     case "image":
