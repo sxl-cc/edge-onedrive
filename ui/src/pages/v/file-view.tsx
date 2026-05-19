@@ -6,6 +6,7 @@ import type {
   MsGraphDriveItemImage,
 } from "~api";
 import { MsDriveItem } from "../../components/drive-file-view";
+import { normalizeUrlPath } from "../../utils/path";
 import { req } from "../../utils/req";
 
 const getItem = async (params: { path: string }) => {
@@ -14,6 +15,9 @@ const getItem = async (params: { path: string }) => {
   );
   return res;
 };
+
+const createDownloadUrl = (path: string) =>
+  normalizeUrlPath("d", ...path.split("/").map(encodeURIComponent));
 
 export function FileView(props: { path: string; refetchSignal: number }) {
   const query = createQuery({
@@ -32,6 +36,7 @@ export function FileView(props: { path: string; refetchSignal: number }) {
   return (
     <div class="flex h-full w-full items-center">
       <MsDriveItem
+        downloadHref={createDownloadUrl(props.path)}
         item={query.data as MsGraphDriveItemFile | MsGraphDriveItemImage}
         loading={query.isLoading}
       />

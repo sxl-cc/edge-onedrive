@@ -1,6 +1,7 @@
 import { env } from "hono/adapter";
 import { auth } from "../../middleware/auth";
 import { createMsGraphSDK, fullPath } from "../../ms-graph/client";
+import { isEnabled } from "../../utils/env";
 import type { V1App } from ".";
 
 export function registerV1DriveRoutes(v1: V1App) {
@@ -8,7 +9,7 @@ export function registerV1DriveRoutes(v1: V1App) {
     "/drive/list/:path{.*}",
     auth((c) => {
       const { ENABLE_GUEST } = env(c);
-      return ENABLE_GUEST;
+      return isEnabled(ENABLE_GUEST);
     }),
     async (c) => {
       const path = c.req.param("path");
@@ -31,7 +32,7 @@ export function registerV1DriveRoutes(v1: V1App) {
     "/drive/get/:path{.*}",
     auth((c) => {
       const { ENABLE_GUEST } = env(c);
-      return ENABLE_GUEST;
+      return isEnabled(ENABLE_GUEST);
     }),
     async (c) => {
       const path = c.req.param("path");

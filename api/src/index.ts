@@ -1,9 +1,10 @@
-import { type Env, Hono } from "hono";
+import { type Context, type Env, Hono } from "hono";
 import { env } from "hono/adapter";
 import { cors } from "hono/cors";
 import v1 from "./api/v1";
 import type { KeyValueStorage } from "./kv-storage";
 import { createMsGraphSDK, fullPath } from "./ms-graph/client";
+import { isEnabled } from "./utils/env";
 import { ApiError } from "./utils/error";
 
 export interface AppEnv extends Env {
@@ -14,8 +15,8 @@ export interface AppEnv extends Env {
     ENTRA_ID_ENDPOINT: string;
     GRAPH_ENDPOINT: string;
     CORS_ORIGIN: string;
-    DOWNLOAD_PROXY: boolean;
-    ENABLE_GUEST: boolean;
+    DOWNLOAD_PROXY: boolean | string;
+    ENABLE_GUEST: boolean | string;
   };
   Variables: {
     kv: KeyValueStorage;
@@ -23,7 +24,7 @@ export interface AppEnv extends Env {
 }
 
 export interface edgeOnedriveAppParams {
-  kv: KeyValueStorage;
+  kv: (c: Context<AppEnv>) => KeyValueStorage | Promise<KeyValueStorage>;
 }
 
 export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
@@ -31,7 +32,7 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
 
   app.use("*", async (c, next) => {
     const kv = params.kv;
-    c.set("kv", kv);
+    c.set("kv", await kv(c));
     await next();
   });
 
@@ -69,13 +70,13 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
     }
 
     if (!file.download_url) {
-      throw new ApiError("Missing download url", {
+      throw new ApiError("MsGraph file has no download url", {
         status: 400,
         details: file,
       });
     }
 
-    if (env(c).DOWNLOAD_PROXY) {
+    if (isEnabled(env(c).DOWNLOAD_PROXY)) {
       return fetch(file.download_url);
     }
 

@@ -16,7 +16,7 @@ const kv = new DbKvStorage({
 await kv.initialize();
 
 const app = createEdgeOnedriveApp({
-  kv,
+  kv: () => kv,
 });
 
 serve(

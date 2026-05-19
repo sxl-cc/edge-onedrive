@@ -19,6 +19,7 @@ function Skeleton() {
 }
 
 export function MsDriveItem(props: {
+  downloadHref?: string;
   item?: MsGraphDriveItemFile | MsGraphDriveItemImage;
   loading: boolean;
 }) {
@@ -64,7 +65,7 @@ export function MsDriveItem(props: {
           <a
             class="c-neutral-0 block flex h-32px min-w-120px items-center justify-center rounded-4px bg-neutral-9"
             download={props.item!.name}
-            href={props.item!.download_url}
+            href={props.downloadHref || props.item!.download_url}
           >
             {t("global.download")}
           </a>

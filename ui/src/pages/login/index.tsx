@@ -78,6 +78,9 @@ export default function LoginPage() {
       if (isSetupMode()) {
         await setupPassword(name, pwd);
         toaster.success(t("login.setupSuccess"));
+        await acts.login(name, pwd);
+        navigate("/settings", { replace: true });
+        return;
       }
 
       await acts.login(name, pwd);

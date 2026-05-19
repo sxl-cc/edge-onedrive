@@ -13,6 +13,7 @@ import {
 import type { KeyValueStorage } from "../../kv-storage";
 import { auth } from "../../middleware/auth";
 import { createMsGraphSDK } from "../../ms-graph/client";
+import { isEnabled } from "../../utils/env";
 import { ApiError } from "../../utils/error";
 import { success } from "../../utils/resp";
 import type { V1App } from ".";
@@ -247,7 +248,7 @@ export function registerV1AuthRoutes(v1: V1App) {
 
   v1.get("/auth/guest", async (c) =>
     c.json({
-      guest: env(c).ENABLE_GUEST,
+      guest: isEnabled(env(c).ENABLE_GUEST),
     })
   );
 }

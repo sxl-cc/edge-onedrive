@@ -5,12 +5,6 @@ import { registerV1DriveRoutes } from "./drive";
 
 const v1 = new Hono<AppEnv>();
 
-v1.get("/hello", (c) =>
-  c.json({
-    message: "Hello from edge-onedrive API",
-  })
-);
-
 registerV1AuthRoutes(v1);
 registerV1DriveRoutes(v1);
 

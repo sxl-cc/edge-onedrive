@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "edge-onedrive",
+  "main": "index.ts",
+  "compatibility_date": "2026-05-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "../../ui/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/d/*"]
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "f81d1b7283ea42baa591db632f494c78"
+    }
+  ],
+  "vars": {
+    "ROOT_DIR": "/",
+    "ENTRA_ID_ENDPOINT": "https://login.microsoftonline.com",
+    "GRAPH_ENDPOINT": "https://graph.microsoft.com",
+    "CORS_ORIGIN": "*",
+    "DOWNLOAD_PROXY": false,
+    "ENABLE_GUEST": false,
+    "CLIENT_ID": "6480b06f-d880-4f5e-ac11-e1daafb3a1f7"
+    //! note that do not put client secret here, put it to worker secret via `wrangler secret put CLIENT_SECRET`
+    // "CLIENT_SECRET": "<do-not-put-secret-here>"
+  }
+}
