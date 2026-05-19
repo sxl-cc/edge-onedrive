@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "check": "tsc --noEmit",
-    "deploy": "pnpm -w build && wrangler deploy",
-    "deploy:dry-run": "pnpm -w build && wrangler deploy --dry-run",
+    "d": "pnpm -w build && wrangler deploy",
+    "d:dry-run": "pnpm -w build && wrangler deploy --dry-run",
     "dev": "wrangler dev"
   },
   "keywords": [],
