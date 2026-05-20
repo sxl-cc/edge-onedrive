@@ -9,21 +9,19 @@ interface KvRow {
 }
 
 const app = createEdgeOnedriveApp({
-  kv: () => {
+  kv: async () => {
     const { DATABASE_URL } = process.env;
     if (!DATABASE_URL) {
       throw new Error("DATABASE_URL is not defined");
     }
     const sql = neon(DATABASE_URL || "");
-    return {
-      async initialize() {
-        await sql`
+    await sql`
       CREATE TABLE IF NOT EXISTS kv_store (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
       )
     `;
-      },
+    return {
       async get(key: string) {
         const data = await sql`
       SELECT value FROM kv_store WHERE key = ${key} LIMIT 1
