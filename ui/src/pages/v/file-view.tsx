@@ -16,14 +16,18 @@ const getItem = async (params: { path: string }) => {
   return res;
 };
 
-const createDownloadUrl = (path: string) =>
-  normalizeUrlPath("d", ...path.split("/").map(encodeURIComponent));
+const createDownloadUrl = (path: string, sign?: string) => {
+  const url = normalizeUrlPath(
+    "/api/v1/drive/d",
+    ...path.split("/").map(encodeURIComponent)
+  );
+  return sign ? `${url}?sign=${sign}` : url;
+};
 
 export function FileView(props: { path: string; refetchSignal: number }) {
-  const query = createQuery({
-    queryKey: () => ["file", props.path],
-    queryFn: async () => getItem({ path: props.path }),
-  });
+  const query = createQuery(
+    async () => getItem({ path: props.path }) as Promise<MsGraphDriveItemFile>
+  );
 
   createWatch(
     () => [props.refetchSignal],
@@ -36,7 +40,7 @@ export function FileView(props: { path: string; refetchSignal: number }) {
   return (
     <div class="flex h-full w-full items-center">
       <MsDriveItem
-        downloadHref={createDownloadUrl(props.path)}
+        downloadHref={createDownloadUrl(props.path, query.data?.sign)}
         item={query.data as MsGraphDriveItemFile | MsGraphDriveItemImage}
         loading={query.isLoading}
       />

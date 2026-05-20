@@ -2,12 +2,19 @@ import type { Context } from "hono";
 import { env } from "hono/adapter";
 import { normalizeUrlPath } from "../../../ui/src/utils/path";
 import type { AppEnv } from "..";
+import { isEnabled } from "../utils/env";
 import { MsGraphSDK } from ".";
 
 export async function createMsGraphSDK(c: Context<AppEnv>) {
   const kv = c.get("kv");
-  const { CLIENT_ID, CLIENT_SECRET, ENTRA_ID_ENDPOINT, GRAPH_ENDPOINT } =
-    env(c);
+  const {
+    CLIENT_ID,
+    CLIENT_SECRET,
+    ENTRA_ID_ENDPOINT,
+    GRAPH_ENDPOINT,
+    LINK_EXPIRATION,
+    LINK_FORCE_SIGN,
+  } = env(c);
   const accessToken = await kv.get("access_token");
   const refreshToken = await kv.get("refresh_token");
   const tokenExpiresAtStr = await kv.get("token_expires_at");
@@ -18,6 +25,12 @@ export async function createMsGraphSDK(c: Context<AppEnv>) {
   return new MsGraphSDK({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    downloadSignature: {
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET,
+      expirationHours: LINK_EXPIRATION,
+      forceSign: isEnabled(LINK_FORCE_SIGN),
+    },
     entraIdEndpoint: ENTRA_ID_ENDPOINT,
     graphEndpoint: GRAPH_ENDPOINT,
     onTokensChange: async (tokens) => {

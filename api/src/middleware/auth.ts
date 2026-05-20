@@ -1,7 +1,8 @@
 import type { Context, Next } from "hono";
-import { HASHED_ACCESS_TOKEN_KEY, verifyApiKey, verifySafeHash } from "../auth";
 import type { KeyValueStorage } from "../kv-storage";
+import { HASHED_ACCESS_TOKEN_KEY, verifyApiKey } from "../utils/api-key";
 import { ApiError } from "../utils/error";
+import { verifySafeHash } from "../utils/pbkdf2";
 
 const apiKeyInvalid = new ApiError("API key is invalid", {
   status: 401,

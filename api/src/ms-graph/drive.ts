@@ -1,10 +1,19 @@
 import type { MsGraphSDK } from ".";
+import { createDownloadSignature, shouldSignDownloadLink } from "./signature";
 import { parseMsResponseBody, toMsGraphError } from "./utils";
 
 export interface MsGraphListDrivePayload {
   nextToken?: string;
   pageSize?: number;
   path?: string;
+  select: string;
+}
+
+export interface MsGraphGetItemPayload {
+  originalPath?: string;
+  path: string;
+  select: string;
+  signDownload?: boolean;
 }
 
 export interface MsGraphDriveItemCommon {
@@ -16,19 +25,11 @@ export interface MsGraphDriveItemCommon {
 }
 
 export interface MsGraphDriveItemFile extends MsGraphDriveItemCommon {
-  category: "image" | "video" | "document" | "unknown";
+  category: "image" | "video" | "unknown";
   download_url: string;
   is_folder: false;
   mime_type: string;
-}
-
-export interface MsGraphDriveItemDocument extends MsGraphDriveItemFile {
-  category: "document";
-  thumbnail: {
-    url: string;
-    height: number;
-    width: number;
-  };
+  sign?: string;
 }
 
 export interface MsGraphDriveItemImage extends MsGraphDriveItemFile {
@@ -63,8 +64,7 @@ export type MsGraphDriveItem =
   | MsGraphDriveItemFile
   | MsGraphDriveItemFolder
   | MsGraphDriveItemImage
-  | MsGraphDriveItemVideo
-  | MsGraphDriveItemDocument;
+  | MsGraphDriveItemVideo;
 
 interface MsGraphRawDriveItem {
   "@microsoft.graph.downloadUrl"?: string;
@@ -151,13 +151,6 @@ function transformDriveItem(
     video.category = "video";
   }
 
-  if (file.category === "unknown") {
-    const doc = file as MsGraphDriveItemDocument;
-    if (doc.thumbnail) {
-      doc.category = "document";
-    }
-  }
-
   return file;
 }
 
@@ -181,12 +174,14 @@ export async function listDir(
   const path = `/v1.0/me/drive/root${p ? `:${p}:` : ""}/children`;
 
   const searchParams = new URLSearchParams({
-    $select:
-      "name,size,createdDateTime,lastModifiedDateTime,folder,file,image,thumbnails,video",
+    $select: payload.select,
     $top: `${payload.pageSize || 200}`,
     $skiptoken: payload.nextToken || "",
-    $expand: "thumbnails($select=medium)",
   });
+
+  if (payload.select.includes("thumbnails")) {
+    searchParams.set("$expand", "thumbnails");
+  }
 
   const fullPath = `${path}?${searchParams.toString()}`;
   const res = await sdk.graphFetch(fullPath);
@@ -210,21 +205,18 @@ export async function listDir(
 
 export async function getItemDetails(
   sdk: MsGraphSDK,
-  itemPath: string,
-  select: string
+  payload: MsGraphGetItemPayload
 ) {
-  const p = normalizePath(itemPath);
+  const p = normalizePath(payload.path);
   const path = `/v1.0/me/drive/root${p ? `:${p}:` : ""}`;
 
   const searchParams = new URLSearchParams({
-    // according to https://stackoverflow.com/questions/65883820/how-to-get-the-download-url-onedrive-graph-api
-    // you should using `content.downloadUrl` to select `@microsoft.graph.downloadUrl`
-    // or use `select` instead of `$select`
-    $select:
-      select ||
-      "name,size,createdDateTime,lastModifiedDateTime,folder,file,content.downloadUrl,image,thumbnails,video",
-    $expand: "thumbnails($select=medium)",
+    $select: payload.select,
   });
+
+  if (payload.select.includes("thumbnails")) {
+    searchParams.set("$expand", "thumbnails($select=medium)");
+  }
 
   const res = await sdk.graphFetch(`${path}?${searchParams.toString()}`);
   const data = (await parseMsResponseBody(res)) as MsGraphRawDriveItem;
@@ -232,5 +224,18 @@ export async function getItemDetails(
     throw toMsGraphError(data, res.status);
   }
 
-  return transformDriveItem(data);
+  const item = transformDriveItem(data);
+  if (
+    !item.is_folder &&
+    sdk.downloadSignature &&
+    payload.signDownload !== false &&
+    shouldSignDownloadLink(sdk.downloadSignature)
+  ) {
+    item.sign = await createDownloadSignature(
+      payload.originalPath || payload.path,
+      sdk.downloadSignature
+    );
+  }
+
+  return item;
 }

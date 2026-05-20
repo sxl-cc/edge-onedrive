@@ -3,18 +3,17 @@ import { type } from "arktype";
 import { env } from "hono/adapter";
 import { nanoid } from "nanoid";
 import { formatToIsoZulu } from "time-core";
+import type { KeyValueStorage } from "../../kv-storage";
+import { auth } from "../../middleware/auth";
+import { createMsGraphSDK } from "../../ms-graph/client";
 import {
   generateApiKey,
   HASHED_ACCESS_TOKEN_KEY,
   HASHED_REFRESH_TOKEN_KEY,
-  safeHash,
-  verifySafeHash,
-} from "../../auth";
-import type { KeyValueStorage } from "../../kv-storage";
-import { auth } from "../../middleware/auth";
-import { createMsGraphSDK } from "../../ms-graph/client";
+} from "../../utils/api-key";
 import { isEnabled } from "../../utils/env";
 import { ApiError } from "../../utils/error";
+import { safeHash, verifySafeHash } from "../../utils/pbkdf2";
 import { success } from "../../utils/resp";
 import type { V1App } from ".";
 

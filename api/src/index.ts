@@ -3,8 +3,6 @@ import { env } from "hono/adapter";
 import { cors } from "hono/cors";
 import v1 from "./api/v1";
 import type { KeyValueStorage } from "./kv-storage";
-import { createMsGraphSDK, fullPath } from "./ms-graph/client";
-import { isEnabled } from "./utils/env";
 import { ApiError } from "./utils/error";
 
 export interface AppEnv extends Env {
@@ -15,7 +13,9 @@ export interface AppEnv extends Env {
     ENTRA_ID_ENDPOINT: string;
     GRAPH_ENDPOINT: string;
     CORS_ORIGIN: string;
-    DOWNLOAD_PROXY: boolean | string;
+    LINK_PROXY: boolean | string;
+    LINK_EXPIRATION: number | string;
+    LINK_FORCE_SIGN: boolean | string;
     ENABLE_GUEST: boolean | string;
   };
   Variables: {
@@ -55,33 +55,6 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
       },
     })
   );
-
-  app.get("/", (c) => c.text("edge-onedrive api"));
-
-  app.get("/d/:file_path{.+}", async (c) => {
-    const filePath = c.req.param("file_path");
-    const sdk = await createMsGraphSDK(c);
-    const file = await sdk.getItemDetails(fullPath(c, filePath));
-    if (file.is_folder) {
-      throw new ApiError("Can not download folder", {
-        status: 400,
-        details: file,
-      });
-    }
-
-    if (!file.download_url) {
-      throw new ApiError("MsGraph file has no download url", {
-        status: 400,
-        details: file,
-      });
-    }
-
-    if (isEnabled(env(c).DOWNLOAD_PROXY)) {
-      return fetch(file.download_url);
-    }
-
-    return c.redirect(file.download_url, 302);
-  });
 
   app.route("/api/v1", v1);
 

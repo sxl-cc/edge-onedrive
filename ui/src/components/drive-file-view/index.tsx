@@ -66,6 +66,8 @@ export function MsDriveItem(props: {
             class="c-neutral-0 block flex h-32px min-w-120px items-center justify-center rounded-4px bg-neutral-9"
             download={props.item!.name}
             href={props.downloadHref || props.item!.download_url}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             {t("global.download")}
           </a>

@@ -3,7 +3,13 @@ import {
   type MsGraphAuthByCodePayload,
   refreshToken,
 } from "./auth";
-import { getItemDetails, listDir, type MsGraphListDrivePayload } from "./drive";
+import {
+  getItemDetails,
+  listDir,
+  type MsGraphGetItemPayload,
+  type MsGraphListDrivePayload,
+} from "./drive";
+import type { MsGraphDownloadSignatureOptions } from "./signature";
 import { MsGraphError, msGraphFetch } from "./utils";
 
 export type MsGraphTokensChangeHandler = (tokens: {
@@ -20,6 +26,7 @@ export interface MsGraphSDKParameters {
   // Client secret for confidential client Microsoft Entra app registrations
   // Required for auth flows
   clientSecret?: string;
+  downloadSignature?: MsGraphDownloadSignatureOptions;
   // Microsoft Entra ID endpoint, default to https://login.microsoftonline.com
   entraIdEndpoint?: string;
   // Microsoft Graph endpoint, default to https://graph.microsoft.com
@@ -42,6 +49,7 @@ export class MsGraphSDK {
   accessToken?: string;
   refreshToken?: string;
   tokenExpiresAt?: number;
+  downloadSignature?: MsGraphDownloadSignatureOptions;
   onTokensChange: MsGraphTokensChangeHandler;
   constructor(parameters: MsGraphSDKParameters) {
     this.entraIdEndpoint =
@@ -53,6 +61,7 @@ export class MsGraphSDK {
     this.clientSecret = parameters.clientSecret || "";
     this.accessToken = parameters.accessToken;
     this.refreshToken = parameters.refreshToken;
+    this.downloadSignature = parameters.downloadSignature;
     // biome-ignore lint/suspicious/noEmptyBlockStatements: noop
     this.onTokensChange = parameters.onTokensChange || (() => {});
     this.tokenExpiresAt = parameters.tokenExpiresAt;
@@ -162,7 +171,7 @@ export class MsGraphSDK {
     return listDir(this, payload);
   }
 
-  getItemDetails(itemPath: string, select = "") {
-    return getItemDetails(this, itemPath, select);
+  getItemDetails(payload: MsGraphGetItemPayload) {
+    return getItemDetails(this, payload);
   }
 }
