@@ -8,5 +8,6 @@
       "dest": "/index.html"
     }
   ],
-  "framework": "hono"
+  "framework": "hono",
+  "outputDirectory": "public"
 }
