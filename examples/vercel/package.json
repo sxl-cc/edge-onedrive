@@ -1,0 +1,17 @@
+{
+  "name": "vercel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -w build:api && pnpm -w build:ui && node scripts/copy-ui.mjs",
+    "check": "tsc --noEmit --skipLibCheck",
+    "vc-dev": "vc dev"
+  },
+  "packageManager": "pnpm@10.33.2",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "api": "workspace:*",
+    "hono": "^4.12.18"
+  }
+}
