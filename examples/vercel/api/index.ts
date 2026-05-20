@@ -1,6 +1,5 @@
 import { neon } from "@neondatabase/serverless";
 import { createEdgeOnedriveApp } from "api";
-import { handle } from "hono/vercel";
 
 //! do this so vercel can detect this file is the hono app entry point
 export type { Context } from "hono";
@@ -51,7 +50,4 @@ const app = createEdgeOnedriveApp({
   },
 });
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PUT = handle(app);
-export const DELETE = handle(app);
+export default app;
