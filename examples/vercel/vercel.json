@@ -5,5 +5,11 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/v1/health",
+      "schedule": "0 2 * * *"
+    }
   ]
 }

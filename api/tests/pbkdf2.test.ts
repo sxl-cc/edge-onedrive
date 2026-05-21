@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safeHash, verifySafeHash } from "../src/auth/pbkdf2";
+import { safeHash, verifySafeHash } from "../src/utils/pbkdf2";
 
 describe("PBKDF2 password hashing", () => {
   it("hashes and verifies a matching input", async () => {

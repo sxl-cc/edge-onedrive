@@ -6,6 +6,14 @@ interface CloudflareKvNamespace {
   put(key: string, value: string): Promise<void>;
 }
 
+interface CloudflareExecutionContext {
+  waitUntil(promise: Promise<unknown>): void;
+}
+
+interface CloudflareWorkerEnv {
+  KV: CloudflareKvNamespace;
+}
+
 const app = createEdgeOnedriveApp({
   kv: (c) => {
     if ("KV" in c.env) {
@@ -28,4 +36,14 @@ const app = createEdgeOnedriveApp({
   },
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(
+    _controller: unknown,
+    _env: CloudflareWorkerEnv,
+    _ctx: CloudflareExecutionContext
+  ) {
+    await app.request("/api/v1/health");
+    console.log("cron processed");
+  },
+};

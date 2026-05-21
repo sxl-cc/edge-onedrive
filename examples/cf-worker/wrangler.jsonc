@@ -28,5 +28,8 @@
     "CLIENT_ID": "6480b06f-d880-4f5e-ac11-e1daafb3a1f7"
     //! note that do not put client secret here, put it to worker secret via `wrangler secret put CLIENT_SECRET`
     // "CLIENT_SECRET": "<do-not-put-secret-here>"
+  },
+  "triggers": {
+    "crons": ["0 2 * * *"]
   }
 }

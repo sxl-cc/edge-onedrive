@@ -1,3 +1,10 @@
 {
-  "nodeVersion": "24"
+  "nodeVersion": "24",
+  "schedules": [
+    {
+      "name": "token-check",
+      "cron": "0 2 * * *",
+      "path": "/api/v1/health"
+    }
+  ]
 }
