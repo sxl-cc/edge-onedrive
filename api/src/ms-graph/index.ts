@@ -8,6 +8,8 @@ import {
   listDir,
   type MsGraphGetItemPayload,
   type MsGraphListDrivePayload,
+  type MsGraphUploadFilePayload,
+  uploadFile,
 } from "./drive";
 import type { MsGraphDownloadSignatureOptions } from "./signature";
 import { MsGraphError, msGraphFetch } from "./utils";
@@ -173,5 +175,9 @@ export class MsGraphSDK {
 
   getItemDetails(payload: MsGraphGetItemPayload) {
     return getItemDetails(this, payload);
+  }
+
+  uploadFile(payload: MsGraphUploadFilePayload) {
+    return uploadFile(this, payload);
   }
 }

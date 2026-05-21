@@ -6,7 +6,10 @@ import {
   verifyDownloadSignature,
 } from "../../ms-graph/signature";
 import { isEnabled } from "../../utils/env";
+import { ApiError } from "../../utils/error";
 import type { V1App } from ".";
+
+const MAX_SIMPLE_UPLOAD_SIZE = 250 * 1024 * 1024;
 
 export function registerV1DriveRoutes(v1: V1App) {
   v1.get(
@@ -59,6 +62,45 @@ export function registerV1DriveRoutes(v1: V1App) {
       return c.json(res);
     }
   );
+
+  v1.put("/drive/upload/:path{.*}", auth(), async (c) => {
+    const path = c.req.param("path");
+    if (!path) {
+      throw new Error("path is required");
+    }
+
+    const contentLength = c.req.header("content-length");
+    if (
+      contentLength &&
+      Number.parseInt(contentLength, 10) > MAX_SIMPLE_UPLOAD_SIZE
+    ) {
+      throw new ApiError("File is too large for simple upload", {
+        status: 413,
+        details: {
+          max_size: MAX_SIMPLE_UPLOAD_SIZE,
+        },
+        code: "file_too_large",
+      });
+    }
+
+    const body = c.req.raw.body;
+    if (!body) {
+      throw new ApiError("Request body is required", {
+        status: 400,
+        details: null,
+        code: "missing_request_body",
+      });
+    }
+
+    const sdk = await createMsGraphSDK(c);
+    const res = await sdk.uploadFile({
+      path: fullPath(c, encodeURIComponent(path)),
+      contentType: c.req.header("content-type") || undefined,
+      body,
+    });
+
+    return c.json(res);
+  });
 
   v1.get("/drive/d/:path{.*}", async (c) => {
     const path = c.req.param("path");

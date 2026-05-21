@@ -16,6 +16,16 @@ export interface MsGraphGetItemPayload {
   signDownload?: boolean;
 }
 
+export interface MsGraphUploadFilePayload {
+  body: BodyInit;
+  contentType?: string;
+  path: string;
+}
+
+type StreamingRequestInit = RequestInit & {
+  duplex?: "half";
+};
+
 export interface MsGraphDriveItemCommon {
   created_at: string;
   is_folder: boolean;
@@ -238,4 +248,34 @@ export async function getItemDetails(
   }
 
   return item;
+}
+
+export async function uploadFile(
+  sdk: MsGraphSDK,
+  payload: MsGraphUploadFilePayload
+) {
+  const p = normalizePath(payload.path);
+  const path = `/v1.0/me/drive/root:${p}:/content`;
+  const headers = new Headers();
+  headers.set(
+    "Content-Type",
+    payload.contentType || "application/octet-stream"
+  );
+  const requestInit: StreamingRequestInit = {
+    method: "PUT",
+    headers,
+    body: payload.body,
+  };
+
+  if (payload.body instanceof ReadableStream) {
+    requestInit.duplex = "half";
+  }
+
+  const res = await sdk.graphFetch(path, requestInit);
+  const data = (await parseMsResponseBody(res)) as MsGraphRawDriveItem;
+  if (!res.ok) {
+    throw toMsGraphError(data, res.status);
+  }
+
+  return transformDriveItem(data);
 }
