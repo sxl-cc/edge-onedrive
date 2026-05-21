@@ -72,6 +72,16 @@ importers:
         specifier: ^4.71.0
         version: 4.92.0(@cloudflare/workers-types@4.20260519.1)
 
+  examples/edgeone:
+    dependencies:
+      api:
+        specifier: workspace:*
+        version: link:../../api
+    devDependencies:
+      tsdown:
+        specifier: 0.22.0
+        version: 0.22.0(tsx@4.21.0)(typescript@6.0.3)
+
   examples/vercel:
     dependencies:
       '@neondatabase/serverless':
