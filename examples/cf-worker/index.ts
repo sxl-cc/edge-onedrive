@@ -1,4 +1,9 @@
-import { createEdgeOnedriveApp, type KeyValueStorage } from "api";
+import {
+  type AppEnv,
+  createEdgeOnedriveApp,
+  type KeyValueStorage,
+  MsGraphSDK,
+} from "api";
 
 interface CloudflareKvNamespace {
   delete(key: string): Promise<void>;
@@ -10,9 +15,9 @@ interface CloudflareExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
 }
 
-interface CloudflareWorkerEnv {
+type CloudflareWorkerEnv = AppEnv["Bindings"] & {
   KV: CloudflareKvNamespace;
-}
+};
 
 const app = createEdgeOnedriveApp({
   kv: (c) => {
@@ -40,10 +45,33 @@ export default {
   fetch: app.fetch,
   async scheduled(
     _controller: unknown,
-    _env: CloudflareWorkerEnv,
+    env: CloudflareWorkerEnv,
     _ctx: CloudflareExecutionContext
   ) {
-    await app.request("/api/v1/health");
-    console.log("cron processed");
+    const kv = env.KV;
+    const accessToken = await kv.get("access_token");
+    const refreshToken = await kv.get("refresh_token");
+    const tokenExpiresAtStr = await kv.get("token_expires_at");
+    const tokenExpiresAt = tokenExpiresAtStr
+      ? Number.parseInt(tokenExpiresAtStr, 10)
+      : undefined;
+
+    const sdk = new MsGraphSDK({
+      clientId: env.CLIENT_ID,
+      clientSecret: env.CLIENT_SECRET,
+      entraIdEndpoint: env.ENTRA_ID_ENDPOINT,
+      graphEndpoint: env.GRAPH_ENDPOINT,
+      onTokensChange: async (tokens) => {
+        await kv.put("access_token", tokens.accessToken);
+        await kv.put("refresh_token", tokens.refreshToken);
+        await kv.put("token_expires_at", tokens.expiresAt.toString());
+      },
+      accessToken: accessToken ?? undefined,
+      refreshToken: refreshToken ?? undefined,
+      tokenExpiresAt,
+    });
+
+    await sdk.refreshAllTokens(false);
+    console.log("check tokens successfully");
   },
 };

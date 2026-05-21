@@ -83,7 +83,8 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
 }
 
 export type { KeyValueStorage } from "./kv-storage";
-
+export type { MsGraphSDKParameters } from "./ms-graph";
+export { MsGraphSDK } from "./ms-graph";
 export type {
   MsGraphDriveItem,
   MsGraphDriveItemFile,
