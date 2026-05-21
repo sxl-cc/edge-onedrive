@@ -4,7 +4,8 @@
     {
       "name": "token-check",
       "cron": "0 2 * * *",
-      "path": "/api/v1/health"
+      "path": "/api/v1/health",
+      "method": "GET"
     }
   ]
 }
