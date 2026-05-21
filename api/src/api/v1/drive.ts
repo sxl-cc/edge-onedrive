@@ -102,6 +102,22 @@ export function registerV1DriveRoutes(v1: V1App) {
     return c.json(res);
   });
 
+  v1.delete("/drive/delete/:path{.*}", auth(), async (c) => {
+    const path = c.req.param("path");
+    if (!path) {
+      throw new Error("path is required");
+    }
+
+    const sdk = await createMsGraphSDK(c);
+    await sdk.deleteItem({
+      path: fullPath(c, encodeURIComponent(path)),
+      ifMatch: c.req.header("if-match") || undefined,
+      prefer: c.req.header("prefer") || undefined,
+    });
+
+    return c.body(null, 204);
+  });
+
   v1.get("/drive/d/:path{.*}", async (c) => {
     const path = c.req.param("path");
     if (path === undefined) {

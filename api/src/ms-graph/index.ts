@@ -4,8 +4,10 @@ import {
   refreshToken,
 } from "./auth";
 import {
+  deleteItem,
   getItemDetails,
   listDir,
+  type MsGraphDeleteItemPayload,
   type MsGraphGetItemPayload,
   type MsGraphListDrivePayload,
   type MsGraphUploadFilePayload,
@@ -179,5 +181,9 @@ export class MsGraphSDK {
 
   uploadFile(payload: MsGraphUploadFilePayload) {
     return uploadFile(this, payload);
+  }
+
+  deleteItem(payload: MsGraphDeleteItemPayload) {
+    return deleteItem(this, payload);
   }
 }
