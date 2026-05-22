@@ -1,0 +1,26 @@
+name: Deploy Application
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: "https://registry.npmjs.org"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install && pnpm add -g edgeone
+
+      - name: Deploy application
+        run: pnpm -F edgeone deploy-edge -t ${{ secrets.EDGEONE_TOKEN }} -n demo-edge-onedrive
