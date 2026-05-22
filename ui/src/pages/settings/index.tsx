@@ -3,17 +3,19 @@ import { createStore } from "solid-js/store";
 import { createQuery } from "solid-tiny-query";
 import {
   Button,
+  Combobox,
   Field,
   PasswordInput,
   SpinRing,
   TextField,
   useToaster,
 } from "solid-tiny-ui";
-import { useTranslator } from "../../i18n";
+import { type Locale, useTranslator } from "../../i18n";
 import {
   createOneDriveAuthorizationRequest,
   ONEDRIVE_AUTH_SESSION_STORAGE_KEY,
 } from "../../lib/pkce";
+import { useAppState } from "../../states/app-state";
 import { req } from "../../utils/req";
 
 interface AuthSettingsState {
@@ -28,6 +30,14 @@ interface SettingsFormState {
   password: string;
   savingLogin: boolean;
   username: string;
+}
+
+type LocaleSetting = Locale | "auto";
+type ThemeSetting = "auto" | "light" | "dark";
+
+interface SettingsOption<T extends string> {
+  label: string;
+  value: T;
 }
 
 async function getAuthSettings() {
@@ -75,6 +85,7 @@ function StatusPill(props: { active: boolean; label: string }) {
 export default function SettingsPage() {
   const toaster = useToaster();
   const t = useTranslator();
+  const [appState, appActions] = useAppState();
   const query = createQuery(getAuthSettings);
   const [form, setForm] = createStore<SettingsFormState>({
     username: "",
@@ -162,6 +173,18 @@ export default function SettingsPage() {
     }
   };
 
+  const languageOptions = (): SettingsOption<LocaleSetting>[] => [
+    { label: "auto", value: "auto" },
+    { label: "en", value: "en" },
+    { label: "zh-cn", value: "zh-cn" },
+  ];
+
+  const themeOptions = (): SettingsOption<ThemeSetting>[] => [
+    { label: "auto", value: "auto" },
+    { label: "light", value: "light" },
+    { label: "dark", value: "dark" },
+  ];
+
   return (
     <section class="scrollbar h-full overflow-y-auto p-xl">
       <Show
@@ -184,6 +207,32 @@ export default function SettingsPage() {
               {t("settings.description")}
             </p>
           </header>
+
+          <section class="mb-3xl grid gap-lg md:grid-cols-2">
+            <Field>
+              <Field.Title>{t("settings.language")}</Field.Title>
+              <Combobox<SettingsOption<LocaleSetting>>
+                onChange={(value) =>
+                  appActions.setState("locale", value as LocaleSetting)
+                }
+                options={languageOptions()}
+                size="large"
+                value={appState.locale}
+              />
+            </Field>
+
+            <Field>
+              <Field.Title>{t("settings.theme")}</Field.Title>
+              <Combobox<SettingsOption<ThemeSetting>>
+                onChange={(value) =>
+                  appActions.setState("theme", value as ThemeSetting)
+                }
+                options={themeOptions()}
+                size="large"
+                value={appState.theme}
+              />
+            </Field>
+          </section>
 
           <form
             class="mb-3xl flex flex-col gap-lg"

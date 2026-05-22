@@ -20,7 +20,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install && pnpm add -g edgeone
+        run: pnpm install && npm add -g edgeone
 
       - name: Deploy application
         run: pnpm -F edgeone deploy-edge -t ${{ secrets.EDGEONE_TOKEN }} -n demo-edge-onedrive

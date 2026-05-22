@@ -2,6 +2,7 @@ import { createMemo } from "solid-js";
 import { defineGlobalStore } from "solid-tiny-context";
 import { getTimestamp } from "time-core";
 import type { Locale } from "../i18n";
+import { detectLanguage } from "../utils/lang";
 import { req } from "../utils/req";
 
 export interface TokensResp {
@@ -12,9 +13,10 @@ export interface TokensResp {
 
 const appState = defineGlobalStore("app-state", {
   state: () => ({
-    isDark: false,
+    theme: "auto" as "auto" | "light" | "dark",
+    themeMediaChanges: 1,
     hue: 165,
-    locale: "en" as Locale,
+    locale: "auto" as Locale | "auto",
     accessToken: "",
     refreshToken: "",
     expiresAt: 0,
@@ -55,6 +57,23 @@ const appState = defineGlobalStore("app-state", {
       }
     },
 
+    getLocale() {
+      if (this.state.locale === "auto") {
+        return detectLanguage();
+      }
+      return this.state.locale;
+    },
+
+    getTheme() {
+      if (this.state.theme === "auto" && this.state.themeMediaChanges) {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      }
+
+      return this.state.theme as "light" | "dark";
+    },
+
     logout() {
       this.actions.setState({
         accessToken: "",
@@ -69,10 +88,12 @@ export function useAppState() {
   return appState;
 }
 
-export function useDarkMode() {
-  const [state, actions] = useAppState();
-  const isDark = createMemo(() => state.isDark);
-  const setIsDark = (isDark: boolean) => actions.setState("isDark", isDark);
+export function useTheme() {
+  const [, actions] = useAppState();
+  const theme = createMemo(() => actions.getTheme());
+  const setTheme = (theme: "auto" | "light" | "dark") => {
+    actions.setState("theme", theme);
+  };
 
-  return [isDark, setIsDark] as const;
+  return [theme, setTheme] as const;
 }

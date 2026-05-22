@@ -19,10 +19,10 @@ async function fetchDict(locale: Locale) {
 }
 
 export function useTranslator() {
-  const [state] = useAppState();
+  const [, acts] = useAppState();
   const query = createQuery({
-    queryKey: () => ["i18n", state.locale],
-    queryFn: () => fetchDict(state.locale),
+    queryKey: () => ["i18n", acts.getLocale()] as const,
+    queryFn: ({ queryKey }) => fetchDict(queryKey[1]),
     staleTime: 3600 * 1000, // 1 hour
     placeholderData: {} as Dictionary,
   });

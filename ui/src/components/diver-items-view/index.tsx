@@ -24,9 +24,9 @@ function DriveItemRow(props: {
   const rowClass = () => {
     const classes = ["cursor-pointer"];
     if (props.active) {
-      classes.push("bg-neutral-2/25");
+      classes.push("bg-neutral-3/25");
     } else {
-      classes.push("hover:bg-neutral-1/25");
+      classes.push("hover:bg-neutral-2/20");
     }
     return classes.join(" ");
   };
@@ -71,13 +71,13 @@ function DriveItemRowsSkeleton() {
   return (
     <TableCore.Row>
       <TableCore.Cell class="h-46px px-sm">
-        <div class="h-60% w-25% animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+        <div class="h-60% w-25% animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
       </TableCore.Cell>
       <TableCore.Cell class="h-40px px-sm">
-        <div class="h-60% w-20% animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+        <div class="h-60% w-20% animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
       </TableCore.Cell>
       <TableCore.Cell class="h-40px px-sm">
-        <div class="h-60% w-30% animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+        <div class="h-60% w-30% animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
       </TableCore.Cell>
     </TableCore.Row>
   );

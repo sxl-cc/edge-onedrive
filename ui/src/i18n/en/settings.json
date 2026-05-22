@@ -19,6 +19,7 @@
   "description": "Manage the admin login, OneDrive authorization, and long-lived API key.",
   "expiresAt": "Expires at",
   "generateApiKey": "Generate new API key",
+  "language": "Language",
   "loginSaved": "Login info saved",
   "newPassword": "New password",
   "notConfigured": "Not configured",
@@ -28,6 +29,7 @@
   "passwordMismatchError": "The two passwords do not match.",
   "passwordPlaceholder": "At least 9 characters",
   "saveLogin": "Save login",
+  "theme": "Theme",
   "tokenType": "Token type",
   "username": "Username",
   "usernameMinError": "Username must be at least 4 characters."

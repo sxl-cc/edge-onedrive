@@ -10,10 +10,10 @@ import { Picture } from "../picture";
 function Skeleton() {
   return (
     <>
-      <div class="h-80px w-80px animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
-      <div class="h-30px w-200px animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
-      <div class="h-24px w-120px animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
-      <div class="h-32px w-100px animate-duration-1000 animate-pulse rounded-md bg-neutral-1" />
+      <div class="h-80px w-80px animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
+      <div class="h-30px w-200px animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
+      <div class="h-24px w-120px animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
+      <div class="h-32px w-100px animate-duration-1000 animate-pulse rounded-md bg-neutral-3/60" />
     </>
   );
 }
