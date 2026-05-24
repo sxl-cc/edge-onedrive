@@ -32,7 +32,7 @@ export class DbKvStorage implements KeyValueStorage {
     return rows[0].value as string;
   }
 
-  set(key: string, value: string): Promise<void> {
+  put(key: string, value: string): Promise<void> {
     return this.db.sql`
       INSERT INTO kv_store (key, value)
       VALUES (${key}, ${value})

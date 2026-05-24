@@ -34,7 +34,7 @@ const app = createEdgeOnedriveApp({
 
         return row.value;
       },
-      async set(key: string, value: string) {
+      async put(key: string, value: string) {
         await sql`
       INSERT INTO kv_store (key, value)
       VALUES (${key}, ${value})

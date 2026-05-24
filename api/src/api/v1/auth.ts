@@ -49,8 +49,8 @@ async function setNewTokens(kv: KeyValueStorage) {
 
   const refresh_token = generateApiKey(now + REFRESH_TOKEN_EXPIRATION);
 
-  await kv.set(HASHED_ACCESS_TOKEN_KEY, await safeHash(access_token));
-  await kv.set(HASHED_REFRESH_TOKEN_KEY, await safeHash(refresh_token));
+  await kv.put(HASHED_ACCESS_TOKEN_KEY, await safeHash(access_token));
+  await kv.put(HASHED_REFRESH_TOKEN_KEY, await safeHash(refresh_token));
 
   return {
     access_token,
@@ -138,8 +138,8 @@ export function registerV1AuthRoutes(v1: V1App) {
     async (c) => {
       const data = c.req.valid("json");
       const kv = c.get("kv");
-      await kv.set("username", data.username);
-      await kv.set("hashed_password", await safeHash(data.password));
+      await kv.put("username", data.username);
+      await kv.put("hashed_password", await safeHash(data.password));
 
       return success(c);
     }
@@ -207,7 +207,7 @@ export function registerV1AuthRoutes(v1: V1App) {
     const kv = c.get("kv");
 
     const hashedKey = await safeHash(newKey);
-    await kv.set("api_key", hashedKey);
+    await kv.put("api_key", hashedKey);
 
     return c.json({
       key: newKey,
@@ -229,8 +229,8 @@ export function registerV1AuthRoutes(v1: V1App) {
 
     const data = c.req.valid("json");
 
-    await kv.set("username", data.username);
-    await kv.set("hashed_password", await safeHash(data.password));
+    await kv.put("username", data.username);
+    await kv.put("hashed_password", await safeHash(data.password));
 
     return success(c);
   });

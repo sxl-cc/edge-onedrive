@@ -9,6 +9,7 @@ export function generateApiKey(expiresAt: number) {
   return `sk_${expiresAt}_${uid}`;
 }
 
+
 export function verifyApiKey(apiKey: string) {
   if (!apiKey.startsWith("sk_")) {
     return false;

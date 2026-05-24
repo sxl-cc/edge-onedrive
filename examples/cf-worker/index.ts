@@ -28,7 +28,7 @@ const app = createEdgeOnedriveApp({
         get(key) {
           return kv.get(key);
         },
-        set(key, value) {
+        put(key, value) {
           return kv.put(key, value);
         },
         delete(key) {

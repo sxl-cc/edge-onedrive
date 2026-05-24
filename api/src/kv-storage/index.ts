@@ -4,5 +4,5 @@
 export interface KeyValueStorage {
   delete(key: string): Promise<void>;
   get(key: string): Promise<string | null>;
-  set(key: string, value: string): Promise<void>;
+  put(key: string, value: string): Promise<void>;
 }

@@ -34,9 +34,9 @@ export async function createMsGraphSDK(c: Context<AppEnv>) {
     entraIdEndpoint: ENTRA_ID_ENDPOINT,
     graphEndpoint: GRAPH_ENDPOINT,
     onTokensChange: async (tokens) => {
-      await kv.set("access_token", tokens.accessToken);
-      await kv.set("refresh_token", tokens.refreshToken);
-      await kv.set("token_expires_at", tokens.expiresAt.toString());
+      await kv.put("access_token", tokens.accessToken);
+      await kv.put("refresh_token", tokens.refreshToken);
+      await kv.put("token_expires_at", tokens.expiresAt.toString());
     },
     accessToken: accessToken ?? undefined,
     refreshToken: refreshToken ?? undefined,
