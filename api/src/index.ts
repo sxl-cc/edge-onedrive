@@ -1,23 +1,12 @@
 import { type Context, type Env, Hono } from "hono";
-import { env } from "hono/adapter";
 import { cors } from "hono/cors";
 import v1 from "./api/v1";
 import type { KeyValueStorage } from "./kv-storage";
+import { type AppRuntimeEnv, getEnvConfig } from "./utils/env";
 import { ApiError } from "./utils/error";
 
 export interface AppEnv extends Env {
-  Bindings: {
-    CLIENT_ID: string;
-    CLIENT_SECRET: string;
-    ROOT_DIR: string;
-    ENTRA_ID_ENDPOINT: string;
-    GRAPH_ENDPOINT: string;
-    CORS_ORIGIN: string;
-    LINK_PROXY: boolean | string;
-    LINK_EXPIRATION: number | string;
-    LINK_FORCE_SIGN: boolean | string;
-    ENABLE_GUEST: boolean | string;
-  };
+  Bindings: AppRuntimeEnv;
   Variables: {
     kv: KeyValueStorage;
   };
@@ -40,18 +29,15 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
     "/api/*",
     cors({
       origin: (origin, c) => {
-        const allowedOrigin: string | undefined = env(c).CORS_ORIGIN;
-        if (allowedOrigin?.trim()) {
-          const origins = allowedOrigin.split(",").map((o) => o.trim());
-          if (origins.includes("*")) {
-            return "*";
-          }
-          if (origins.includes(origin)) {
-            return origin;
-          }
+        const { origins } = getEnvConfig(c).cors;
+        if (origins.includes("*")) {
+          return "*";
+        }
+        if (origins.includes(origin)) {
+          return origin;
         }
 
-        return "*";
+        return origins[0] ?? "*";
       },
     })
   );

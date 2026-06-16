@@ -1,6 +1,5 @@
 import { sValidator } from "@hono/standard-validator";
 import { type } from "arktype";
-import { env } from "hono/adapter";
 import { nanoid } from "nanoid";
 import { formatToIsoZulu } from "time-core";
 import type { KeyValueStorage } from "../../kv-storage";
@@ -11,7 +10,7 @@ import {
   HASHED_ACCESS_TOKEN_KEY,
   HASHED_REFRESH_TOKEN_KEY,
 } from "../../utils/api-key";
-import { isEnabled } from "../../utils/env";
+import { getEnvConfig } from "../../utils/env";
 import { ApiError } from "../../utils/error";
 import { safeHash, verifySafeHash } from "../../utils/pbkdf2";
 import { success } from "../../utils/resp";
@@ -151,9 +150,9 @@ export function registerV1AuthRoutes(v1: V1App) {
     sValidator("json", msGraphAuthorizationInfo),
     (c) => {
       const data = c.req.valid("json");
-      const { CLIENT_ID, ENTRA_ID_ENDPOINT } = env(c);
+      const { clientId, entraIdEndpoint } = getEnvConfig(c).microsoft;
 
-      if (!CLIENT_ID?.trim()) {
+      if (!clientId) {
         throw new ApiError("Missing Microsoft Graph client id", {
           status: 400,
           details: null,
@@ -162,10 +161,8 @@ export function registerV1AuthRoutes(v1: V1App) {
       }
 
       const state = nanoid();
-      const url = new URL(
-        `${createAuthorityBase(ENTRA_ID_ENDPOINT)}/authorize`
-      );
-      url.searchParams.set("client_id", CLIENT_ID);
+      const url = new URL(`${createAuthorityBase(entraIdEndpoint)}/authorize`);
+      url.searchParams.set("client_id", clientId);
       url.searchParams.set("response_type", "code");
       url.searchParams.set("redirect_uri", data.redirect_uri);
       url.searchParams.set("response_mode", "query");
@@ -247,7 +244,7 @@ export function registerV1AuthRoutes(v1: V1App) {
 
   v1.get("/auth/guest", async (c) =>
     c.json({
-      guest: isEnabled(env(c).ENABLE_GUEST),
+      guest: getEnvConfig(c).auth.guest,
     })
   );
 }

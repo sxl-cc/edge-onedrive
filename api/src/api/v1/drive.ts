@@ -1,11 +1,10 @@
-import { env } from "hono/adapter";
 import { auth } from "../../middleware/auth";
 import { createMsGraphSDK, fullPath } from "../../ms-graph/client";
 import {
   shouldSignDownloadLink,
   verifyDownloadSignature,
 } from "../../ms-graph/signature";
-import { isEnabled } from "../../utils/env";
+import { getEnvConfig } from "../../utils/env";
 import { ApiError } from "../../utils/error";
 import type { V1App } from ".";
 
@@ -14,10 +13,7 @@ const MAX_SIMPLE_UPLOAD_SIZE = 250 * 1024 * 1024;
 export function registerV1DriveRoutes(v1: V1App) {
   v1.get(
     "/drive/list/:path{.*}",
-    auth((c) => {
-      const { ENABLE_GUEST } = env(c);
-      return isEnabled(ENABLE_GUEST);
-    }),
+    auth((c) => getEnvConfig(c).auth.guest),
     async (c) => {
       const path = c.req.param("path");
       if (path === undefined) {
@@ -39,10 +35,7 @@ export function registerV1DriveRoutes(v1: V1App) {
 
   v1.get(
     "/drive/get/:path{.*}",
-    auth((c) => {
-      const { ENABLE_GUEST } = env(c);
-      return isEnabled(ENABLE_GUEST);
-    }),
+    auth((c) => getEnvConfig(c).auth.guest),
     async (c) => {
       const path = c.req.param("path");
       if (path === undefined) {
@@ -123,22 +116,16 @@ export function registerV1DriveRoutes(v1: V1App) {
     if (path === undefined) {
       throw new Error("path is required");
     }
-    const {
-      CLIENT_ID,
-      CLIENT_SECRET,
-      LINK_EXPIRATION,
-      LINK_FORCE_SIGN,
-      LINK_PROXY,
-    } = env(c);
+    const config = getEnvConfig(c);
     const downloadSignature = {
-      clientId: CLIENT_ID,
-      clientSecret: CLIENT_SECRET,
-      expirationHours: LINK_EXPIRATION,
-      forceSign: isEnabled(LINK_FORCE_SIGN),
+      clientId: config.microsoft.clientId,
+      clientSecret: config.microsoft.clientSecret,
+      expirationHours: config.download.expirationHours,
+      forceSign: config.download.forceSign,
     };
 
     const combinedSign = c.req.query("sign");
-    if (isEnabled(LINK_FORCE_SIGN) && !combinedSign) {
+    if (config.download.forceSign && !combinedSign) {
       throw new Error("sign is required");
     }
 
@@ -161,7 +148,7 @@ export function registerV1DriveRoutes(v1: V1App) {
     });
 
     if ("download_url" in res) {
-      if (isEnabled(LINK_PROXY)) {
+      if (config.download.proxy) {
         return fetch(res.download_url);
       }
       return c.redirect(res.download_url, 307);
