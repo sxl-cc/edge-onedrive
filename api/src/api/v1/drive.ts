@@ -70,9 +70,9 @@ export function registerV1DriveRoutes(v1: V1App) {
       throw new ApiError("File is too large for simple upload", {
         status: 413,
         details: {
-          max_size: MAX_SIMPLE_UPLOAD_SIZE,
+          maxSize: MAX_SIMPLE_UPLOAD_SIZE,
         },
-        code: "file_too_large",
+        code: "FILE_TOO_LARGE",
       });
     }
 
@@ -81,7 +81,7 @@ export function registerV1DriveRoutes(v1: V1App) {
       throw new ApiError("Request body is required", {
         status: 400,
         details: null,
-        code: "missing_request_body",
+        code: "MISSING_REQUEST_BODY",
       });
     }
 
@@ -149,9 +149,9 @@ export function registerV1DriveRoutes(v1: V1App) {
 
     if ("download_url" in res) {
       if (config.download.proxy) {
-        return fetch(res.download_url);
+        return fetch(res.download_url!);
       }
-      return c.redirect(res.download_url, 307);
+      return c.redirect(res.download_url!, 307);
     }
 
     return c.notFound();

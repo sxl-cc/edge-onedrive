@@ -5,9 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "check": "tsc --noEmit",
     "d": "pnpm -w build && wrangler deploy",
-    "d:dry-run": "pnpm -w build && wrangler deploy --dry-run"
+    "d:dry-run": "pnpm -w build && wrangler deploy --dry-run",
+    "tc": "tsc --noEmit --skipLibCheck"
   },
   "keywords": [],
   "author": "",

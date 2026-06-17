@@ -1,9 +1,4 @@
-import {
-  type AppEnv,
-  createEdgeOnedriveApp,
-  type KeyValueStorage,
-  MsGraphSDK,
-} from "api";
+import { createEdgeOnedriveApp, type KeyValueStorage, MsGraphSDK } from "api";
 
 interface CloudflareKvNamespace {
   delete(key: string): Promise<void>;
@@ -15,9 +10,13 @@ interface CloudflareExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
 }
 
-type CloudflareWorkerEnv = AppEnv["Bindings"] & {
+interface CloudflareWorkerEnv {
+  CLIENT_ID?: string;
+  CLIENT_SECRET?: string;
+  ENTRA_ID_ENDPOINT?: string;
+  GRAPH_ENDPOINT?: string;
   KV: CloudflareKvNamespace;
-};
+}
 
 const app = createEdgeOnedriveApp({
   kv: (c) => {

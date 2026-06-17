@@ -38,7 +38,7 @@ export interface MsGraphDriveItemCommon {
 
 export interface MsGraphDriveItemFile extends MsGraphDriveItemCommon {
   category: "image" | "video" | "unknown";
-  download_url: string;
+  download_url?: string;
   is_folder: false;
   mime_type: string;
   sign?: string;

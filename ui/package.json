@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "test": "vitest",
-    "tsc": "tsc --noEmit --skipLibCheck"
+    "tc": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@iconify-json/ri": "latest",

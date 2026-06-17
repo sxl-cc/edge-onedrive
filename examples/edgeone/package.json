@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm -w build:api && pnpm -w build:ui && tsdown",
     "dev": "cd dist && edgeone pages dev",
-    "deploy-edge": "pnpm build && cd dist && edgeone pages deploy"
+    "deploy-edge": "pnpm build && cd dist && edgeone pages deploy",
+    "tc": "tsc --noEmit --skipLibCheck"
   },
   "packageManager": "pnpm@10.33.2",
   "dependencies": {

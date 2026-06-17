@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm -w build:api && pnpm -w build:ui && node scripts/copy-ui.mjs",
     "check": "tsc --noEmit --skipLibCheck",
-    "vc-dev": "vc dev"
+    "vc-dev": "vc dev",
+    "tc": "tsc --noEmit --skipLibCheck"
   },
   "packageManager": "pnpm@10.33.2",
   "dependencies": {

@@ -116,7 +116,7 @@ export class MsGraphSDK {
       throw new MsGraphError("No access token available", {
         status: 400,
         details: null,
-        code: "no_access_token",
+        code: "NO_ACCESS_TOKEN",
       });
     }
 
@@ -151,7 +151,7 @@ export class MsGraphSDK {
       throw new MsGraphError("No refresh token available", {
         status: 400,
         details: null,
-        code: "no_refresh_token",
+        code: "NO_REFRESH_TOKEN",
       });
     }
 

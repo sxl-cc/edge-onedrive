@@ -9,7 +9,8 @@ import { FileView } from "./file-view";
 import { FolderView } from "./folder-view";
 
 const getPathType = async (path: string) => {
-  const res = await req.get<MsGraphDriveItem>(`/api/v1/drive/get/${path}`, {
+  const res = await req.post<MsGraphDriveItem>("/api/v2/drive.get", {
+    path,
     select: "folder",
   });
   return res.is_folder ? "folder" : "file";

@@ -38,7 +38,7 @@ class Req {
 
             if (resp.status === 401) {
               const [state, actions] = useAppState();
-              if (state.refreshToken && data.code === "deprecated_api_key") {
+              if (state.refreshToken && data.code === "DEPRECATED_API_KEY") {
                 await actions.refresh();
                 ctx.request.headers.set(
                   "Authorization",

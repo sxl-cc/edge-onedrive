@@ -1,6 +1,7 @@
 import { type Context, type Env, Hono } from "hono";
 import { cors } from "hono/cors";
 import v1 from "./api/v1";
+import v2 from "./api/v2";
 import type { KeyValueStorage } from "./kv-storage";
 import { type AppRuntimeEnv, getEnvConfig } from "./utils/env";
 import { ApiError } from "./utils/error";
@@ -43,6 +44,7 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
   );
 
   app.route("/api/v1", v1);
+  app.route("/api/v2", v2);
 
   app.onError((err, c) => {
     if (err instanceof ApiError) {
@@ -60,6 +62,7 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
       {
         message: err.message,
         code: "INTERNAL_SERVER_ERROR",
+        details: null,
       },
       500
     );
@@ -77,3 +80,4 @@ export type {
   MsGraphDriveItemFolder,
   MsGraphDriveItemImage,
 } from "./ms-graph/drive";
+export type { AppRuntimeEnv } from "./utils/env";

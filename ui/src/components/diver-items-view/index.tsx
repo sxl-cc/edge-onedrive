@@ -9,6 +9,7 @@ import {
   list,
   runAtNextAnimationFrame,
 } from "solid-tiny-utils";
+import { formatToDateTime } from "time-core";
 import type { MsGraphDriveItem } from "~api";
 import { useTranslator } from "../../i18n";
 import { sizeToString } from "../../utils/size";
@@ -60,7 +61,7 @@ function DriveItemRow(props: {
       </TableCore.Cell>
       <TableCore.Cell class="h-40px px-sm">
         <div class="max-w-full truncate">
-          {props.item.is_folder ? "folder" : props.item.mime_type}
+          {formatToDateTime(props.item.created_at)}
         </div>
       </TableCore.Cell>
     </TableCore.Row>

@@ -7,12 +7,13 @@ import { normalizeUrlPath } from "../../utils/path";
 import { req } from "../../utils/req";
 
 const listItems = async (params: { path: string; next_token: string }) => {
-  const res = await req.get<{
+  const res = await req.post<{
     next_token?: string;
     data: MsGraphDriveItem[];
-  }>(`/api/v1/drive/list/${params.path}`, {
+  }>("/api/v2/drive.list", {
     page_size: 30,
     next_token: params.next_token,
+    path: params.path,
   });
 
   return res;

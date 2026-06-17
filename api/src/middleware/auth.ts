@@ -7,7 +7,7 @@ import { verifySafeHash } from "../utils/pbkdf2";
 const apiKeyInvalid = new ApiError("API key is invalid", {
   status: 401,
   details: null,
-  code: "invalid_api_key",
+  code: "INVALID_API_KEY",
 });
 
 export function auth(skip?: (c: Context) => Promise<boolean> | boolean) {
@@ -43,7 +43,7 @@ export function auth(skip?: (c: Context) => Promise<boolean> | boolean) {
       throw new ApiError("API key is deprecated", {
         status: 401,
         details: null,
-        code: "deprecated_api_key",
+        code: "DEPRECATED_API_KEY",
       });
     }
 

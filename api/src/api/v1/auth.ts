@@ -1,8 +1,8 @@
-import { sValidator } from "@hono/standard-validator";
 import { type } from "arktype";
 import { nanoid } from "nanoid";
 import { formatToIsoZulu } from "time-core";
 import type { KeyValueStorage } from "../../kv-storage";
+import { arkVali } from "../../middleware/ark-vali";
 import { auth } from "../../middleware/auth";
 import { createMsGraphSDK } from "../../ms-graph/client";
 import {
@@ -40,12 +40,11 @@ const MS_GRAPH_AUTH_SCOPES =
 const ERROR_TOKEN = new ApiError("Invalid token", {
   status: 401,
   details: null,
-  code: "invalid_token",
+  code: "INVALID_TOKEN",
 });
 async function setNewTokens(kv: KeyValueStorage) {
   const now = Date.now();
   const access_token = generateApiKey(now + ACCESS_TOKEN_EXPIRATION);
-
   const refresh_token = generateApiKey(now + REFRESH_TOKEN_EXPIRATION);
 
   await kv.put(HASHED_ACCESS_TOKEN_KEY, await safeHash(access_token));
@@ -65,7 +64,7 @@ function createAuthorityBase(entraIdEndpoint: string | undefined) {
 }
 
 export function registerV1AuthRoutes(v1: V1App) {
-  v1.post("/auth/login", sValidator("json", loginInfo), async (c) => {
+  v1.post("/auth/login", arkVali("json", loginInfo), async (c) => {
     const data = c.req.valid("json");
     const kv = c.get("kv");
     const realUsername = await kv.get("username");
@@ -75,7 +74,7 @@ export function registerV1AuthRoutes(v1: V1App) {
       throw new ApiError("Password not set", {
         status: 400,
         details: null,
-        code: "password_not_set",
+        code: "PASSWORD_NOT_SET",
       });
     }
 
@@ -83,7 +82,7 @@ export function registerV1AuthRoutes(v1: V1App) {
       throw new ApiError("Username or password is invalid", {
         status: 401,
         details: null,
-        code: "invalid_credentials",
+        code: "INVALID_CREDENTIALS",
       });
     }
 
@@ -91,7 +90,7 @@ export function registerV1AuthRoutes(v1: V1App) {
       throw new ApiError("Username or password is invalid", {
         status: 401,
         details: null,
-        code: "invalid_credentials",
+        code: "INVALID_CREDENTIALS",
       });
     }
 
@@ -99,7 +98,7 @@ export function registerV1AuthRoutes(v1: V1App) {
     return c.json(tokens);
   });
 
-  v1.post("/auth/refresh", sValidator("json", refreshInfo), async (c) => {
+  v1.post("/auth/refresh", arkVali("json", refreshInfo), async (c) => {
     const { refresh_token } = c.req.valid("json");
 
     const kv = c.get("kv");
@@ -133,7 +132,7 @@ export function registerV1AuthRoutes(v1: V1App) {
   v1.post(
     "/auth/change-login-info",
     auth(),
-    sValidator("json", loginInfo),
+    arkVali("json", loginInfo),
     async (c) => {
       const data = c.req.valid("json");
       const kv = c.get("kv");
@@ -147,7 +146,7 @@ export function registerV1AuthRoutes(v1: V1App) {
   v1.post(
     "/auth/ms-graph-authorization-url",
     auth(),
-    sValidator("json", msGraphAuthorizationInfo),
+    arkVali("json", msGraphAuthorizationInfo),
     (c) => {
       const data = c.req.valid("json");
       const { clientId, entraIdEndpoint } = getEnvConfig(c).microsoft;
@@ -156,7 +155,7 @@ export function registerV1AuthRoutes(v1: V1App) {
         throw new ApiError("Missing Microsoft Graph client id", {
           status: 400,
           details: null,
-          code: "missing_ms_graph_client_id",
+          code: "MISSING_MS_GRAPH_CLIENT_ID",
         });
       }
 
@@ -181,7 +180,7 @@ export function registerV1AuthRoutes(v1: V1App) {
   v1.post(
     "/auth/ms-graph-authorization-code",
     auth(),
-    sValidator("json", msGraphAuthorizationCodeInfo),
+    arkVali("json", msGraphAuthorizationCodeInfo),
     async (c) => {
       const data = c.req.valid("json");
       const sdk = await createMsGraphSDK(c);
@@ -211,7 +210,7 @@ export function registerV1AuthRoutes(v1: V1App) {
     });
   });
 
-  v1.post("/auth/setup", sValidator("json", loginInfo), async (c) => {
+  v1.post("/auth/setup", arkVali("json", loginInfo), async (c) => {
     const kv = c.get("kv");
     const username = await kv.get("username");
     const hashedPassword = await kv.get("hashed_password");
@@ -220,7 +219,7 @@ export function registerV1AuthRoutes(v1: V1App) {
       throw new ApiError("Password already set", {
         status: 400,
         details: null,
-        code: "password_already_set",
+        code: "PASSWORD_ALREADY_SET",
       });
     }
 

@@ -29,7 +29,7 @@ export function transformDriveItem(
     ...common,
     is_folder: false,
     mime_type: item.file?.mimeType || "application/octet-stream",
-    download_url: item["@microsoft.graph.downloadUrl"] || "",
+    download_url: item["@microsoft.graph.downloadUrl"] || undefined,
     category: "unknown",
   };
 

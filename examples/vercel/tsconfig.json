@@ -1,4 +1,7 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["api/index.ts"]
+  "include": ["api/index.ts"],
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
 }

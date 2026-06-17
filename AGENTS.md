@@ -54,10 +54,8 @@ Guidelines:
 
 ## Code Style
 
-- Use `pnpm check` and `pnpm fix`
+- Run `pnpm fix`
 - Prefer clarity over cleverness
-- Use `class` in SolidJS, not `className`
-- Avoid `any` unless there is a strong reason
 - Add comments only when logic is not obvious from code
 
 ## Delivery Standard

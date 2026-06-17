@@ -10,9 +10,9 @@ import { normalizeUrlPath } from "../../utils/path";
 import { req } from "../../utils/req";
 
 const getItem = async (params: { path: string }) => {
-  const res = await req.get<MsGraphDriveItem>(
-    `/api/v1/drive/get/${params.path}`
-  );
+  const res = await req.post<MsGraphDriveItem>("/api/v2/drive.get", {
+    path: params.path,
+  });
   return res;
 };
 
