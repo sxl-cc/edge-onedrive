@@ -1,0 +1,69 @@
+.tiny-date-input {
+    /* vars */
+    --height: calc(var(--tiny-size) * 8);
+    --c-border: rgb(var(--tiny-rgb-neutral-4));
+    --c-disabled-bg: rgb(var(--tiny-rgb-neutral-1));
+    --fs: var(--tiny-fs-sm);
+
+    font-size: var(--fs);
+    height: var(--height);
+    border: 1px solid var(--c-border);
+    border-radius: var(--tiny-radius-sm);
+    padding-left: var(--tiny-space-sm);
+    padding-right: var(--tiny-space-sm);
+    transition: border-color 150ms;
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    min-inline-size: 0;
+
+    &:focus-within {
+        --c-border: rgb(var(--tiny-rgb-brand-3));
+        outline: 2px solid var(--c-border);
+        outline-offset: -1px;
+    }
+
+    &[data-invalid] {
+        --c-border: rgb(var(--tiny-rgb-danger-base));
+    }
+
+    &[data-size="small"] {
+        --height: calc(var(--tiny-size) * 6);
+        --fs: var(--tiny-fs-xs);
+    }
+
+    &[data-size="large"] {
+        --height: calc(var(--tiny-size) * 10);
+        --fs: var(--tiny-fs-md);
+    }
+}
+
+.tiny-date-input__btn {
+    cursor: text;
+    display: inline-block;
+    padding: 0 2px;
+    position: relative;
+
+    &[data-editing] {
+        background: rgb(var(--tiny-rgb-brand-5));
+        color: var(--tiny-c-white);
+    }
+}
+
+.tiny-date-input__layer {
+    position: absolute;
+    inset: 0 2px;
+    text-align: center;
+}
+
+.tiny-date-input__layer {
+    pointer-events: none;
+    opacity: 0;
+}
+[data-editing] .tiny-date-input__layer {
+    opacity: 1;
+}
+
+[data-editing] .tiny-date-input__content {
+    opacity: 0;
+}

@@ -1,0 +1,72 @@
+.tiny-spin {
+    position: relative;
+}
+
+.tiny-spin__loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tiny-spin__loader {
+    &[data-entering],
+    &[data-exiting] {
+        animation-duration: 0.3s;
+        animation-fill-mode: forwards;
+    }
+
+    &[data-entering] {
+        animation-name: tiny-spin-in;
+    }
+
+    &[data-exiting] {
+        animation-name: tiny-spin-out;
+    }
+}
+
+.tiny-spin__content {
+    position: relative;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-color: rgb(var(--tiny-rgb-neutral-1));
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+}
+
+[data-spinning] .tiny-spin__content {
+    opacity: 0.5;
+
+    &::after {
+        opacity: 0.4;
+        pointer-events: auto;
+    }
+}
+
+@keyframes tiny-spin-in {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes tiny-spin-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+}

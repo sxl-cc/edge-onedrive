@@ -1,0 +1,105 @@
+.tiny-calendar {
+  --calendar-radius: var(--tiny-radius-sm);
+  --calendar-c-text: rgb(var(--tiny-rgb-neutral-8));
+  --calendar-c-muted: rgb(var(--tiny-rgb-neutral-5));
+  --calendar-c-hover: rgb(var(--tiny-rgb-neutral-2) / 0.62);
+  --calendar-c-active: rgb(var(--tiny-rgb-brand-5));
+  --calendar-c-active-text: var(--tiny-c-white);
+  --calendar-c-border: rgb(var(--tiny-rgb-neutral-3));
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--tiny-space-xs);
+  color: var(--calendar-c-text);
+  user-select: none;
+}
+
+.tiny-calendar[data-disabled] {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.tiny-calendar__head-tool {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--tiny-space-xs);
+  width: 100%;
+}
+
+.tiny-calendar__title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding-left: 4px;
+  text-align: center;
+  font-size: var(--tiny-fs-sm);
+  font-weight: 600;
+  line-height: var(--tiny-lh-base);
+  color: var(--tiny-c-text-heading);
+}
+
+.tiny-calendar__title-separator {
+  color: var(--calendar-c-muted);
+}
+
+.tiny-calendar__title-segment {
+  position: relative;
+  display: inline-block;
+  padding: 0 2px;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--calendar-radius);
+  cursor: text;
+
+  &[data-editing] {
+    color: var(--calendar-c-active-text);
+    background: var(--calendar-c-active);
+    outline: none;
+  }
+}
+
+.tiny-calendar__title-segment-layer {
+  position: absolute;
+  inset: 0 2px;
+  text-align: center;
+}
+
+.tiny-calendar__title-segment-layer {
+  pointer-events: none;
+  opacity: 0;
+}
+
+[data-editing] .tiny-calendar__title-segment-layer {
+  opacity: 1;
+}
+
+[data-editing] .tiny-calendar__title-segment-content {
+  opacity: 0;
+}
+
+.tiny-calendar__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--calendar-c-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--calendar-radius);
+  transform: rotate(90deg);
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+
+  &:hover {
+    color: var(--calendar-c-text);
+    background: var(--calendar-c-hover);
+  }
+}

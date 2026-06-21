@@ -1,0 +1,12 @@
+$var-prefix: "--tiny";
+
+@mixin set-var($name, $value) {
+  @if $value != "" {
+    #{$var-prefix}-#{$name}: $value;
+  }
+}
+
+/* 获取变量 */
+@function get-var($var) {
+  @return var(#{$var-prefix}-#{$var});
+}

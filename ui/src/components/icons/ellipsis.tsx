@@ -1,0 +1,12 @@
+import { type IconProps, SvgWrapper } from "./common";
+
+export function IconEllipsis(props: IconProps) {
+  return (
+    <SvgWrapper {...props}>
+      <path
+        d="M5 10c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2m14 0c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2m-7 0c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2"
+        fill="currentColor"
+      />
+    </SvgWrapper>
+  );
+}

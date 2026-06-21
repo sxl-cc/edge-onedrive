@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/@solid-tiny-ui/cli/components.schema.json",
+  "theme": "default",
+  "outDir": "src/components"
+}

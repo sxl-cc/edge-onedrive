@@ -1,13 +1,10 @@
 import { useNavigate } from "@solidjs/router";
 import { createEffect, createResource, createSignal, Show } from "solid-js";
-import {
-  Button,
-  Field,
-  PasswordInput,
-  Spin,
-  TextField,
-  useToaster,
-} from "solid-tiny-ui";
+import { Button } from "../../components/button";
+import { Field } from "../../components/field";
+import { PasswordInput, TextField } from "../../components/form-components";
+import { Spin } from "../../components/spin";
+import { useToaster } from "../../components/toaster";
 import { useTranslator } from "../../i18n";
 import { useAppState } from "../../states/app-state";
 import { req } from "../../utils/req";
@@ -48,7 +45,7 @@ export default function LoginPage() {
   const isSetupMode = () => setupReady() === false;
 
   createEffect(() => {
-    if (state.accessToken) {
+    if (state.isLoggedIn) {
       navigate("/v/", { replace: true });
     }
   });
@@ -94,12 +91,7 @@ export default function LoginPage() {
 
   return (
     <section class="h-full w-full p-lg">
-      <Spin
-        classNames={{
-          root: "w-full",
-        }}
-        spinning={setupReady.loading}
-      >
+      <Spin spinning={setupReady.loading}>
         <form
           class="w-full p-xl"
           onSubmit={async (event) => {

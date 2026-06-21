@@ -1,15 +1,15 @@
 import { createEffect, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createQuery } from "solid-tiny-query";
+import { Button } from "../../components/button";
+import { Field } from "../../components/field";
 import {
-  Button,
   Combobox,
-  Field,
   PasswordInput,
-  SpinRing,
   TextField,
-  useToaster,
-} from "solid-tiny-ui";
+} from "../../components/form-components";
+import { SpinRing } from "../../components/spin";
+import { useToaster } from "../../components/toaster";
 import { type Locale, useTranslator } from "../../i18n";
 import {
   createOneDriveAuthorizationRequest,
@@ -329,9 +329,7 @@ export default function SettingsPage() {
                   {t("settings.generateApiKey")}
                 </Button>
                 <Show when={form.newApiKey}>
-                  <Button onClick={copyApiKey} variant="outline">
-                    {t("settings.copy")}
-                  </Button>
+                  <Button onClick={copyApiKey}>{t("settings.copy")}</Button>
                 </Show>
               </div>
 

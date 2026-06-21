@@ -1,0 +1,67 @@
+.tiny-switcher {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    justify-content: center;
+    width: fit-content;
+    gap: var(--tiny-space-sm);
+    height: calc(var(--tiny-size) * 5.5);
+    vertical-align: middle;
+    color: var(--c-label);
+
+    --c-track: rgb(var(--tiny-rgb-neutral-4));
+    --c-track-checked: rgb(var(--tiny-rgb-brand-5));
+    --c-thumb: rgb(var(--tiny-rgb-neutral-0));
+    --c-label: var(--tiny-c-text-label);
+
+    --track-width: calc(var(--tiny-size) * 8.5);
+    --track-height: calc(var(--tiny-size) * 4.5);
+    --thumb-size: calc(var(--tiny-size) * 3.5);
+    --track-padding: calc(var(--tiny-size) * 0.5);
+
+    &[data-disabled] {
+        pointer-events: none;
+        --c-track-checked: rgb(var(--tiny-rgb-neutral-5));
+        --c-track: rgb(var(--tiny-rgb-neutral-3));
+        --c-thumb: rgb(var(--tiny-rgb-neutral-1));
+        --c-label: var(--tiny-c-text-description);
+    }
+
+    &:focus-within:not([data-disabled]) .tiny-switcher-track {
+        outline: 2px solid rgb(var(--tiny-rgb-brand-3));
+        outline-offset: 2px;
+    }
+
+    /* size variants removed — medium is default */
+}
+
+.tiny-switcher-track {
+    width: var(--track-width);
+    height: var(--track-height);
+    background-color: var(--c-track);
+    border-radius: var(--tiny-radius-round);
+    position: relative;
+    transition: background-color 150ms ease;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--track-padding);
+    box-sizing: border-box;
+}
+
+.tiny-switcher-thumb {
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    background-color: var(--c-thumb);
+    border-radius: 50%;
+    transition: transform 150ms ease;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+    transform: translateX(0);
+}
+
+.tiny-switcher[data-checked] .tiny-switcher-track {
+    background-color: var(--c-track-checked);
+}
+
+.tiny-switcher[data-checked] .tiny-switcher-thumb {
+    transform: translateX(calc(var(--track-width) - var(--thumb-size) - (var(--track-padding) * 2)));
+}

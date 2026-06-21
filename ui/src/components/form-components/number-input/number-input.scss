@@ -1,0 +1,53 @@
+.tiny-number-input-wrapper {
+    position: relative;
+    width: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: var(--tiny-radius-sm);
+    padding-left: var(--tiny-space-sm);
+    padding-right: var(--tiny-space-sm);
+    transition: border-color 150ms;
+    display: flex;
+    border-color: var(--c-border);
+
+    --c-border: rgb(var(--tiny-rgb-neutral-3));
+
+    &:focus-within {
+        --c-border: rgb(var(--tiny-rgb-brand-3));
+        outline: 2px solid var(--c-border);
+        outline-offset: -1px;
+    }
+
+    &[data-disabled] {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    &[data-invalid] {
+        --c-border: rgb(var(--tiny-rgb-danger-base));
+    }
+
+    &[data-size="small"] {
+        height: calc(var(--tiny-size) * 6);
+    }
+
+    &[data-size="medium"] {
+        height: calc(var(--tiny-size) * 8);
+    }
+
+    &[data-size="large"] {
+        height: calc(var(--tiny-size) * 10);
+    }
+
+    &[data-disabled] {
+        pointer-events: none;
+        user-select: none;
+        background-color: rgb(var(--tiny-rgb-neutral-1));
+        opacity: 0.7;
+    }
+}
+
+.tiny-number-input {
+    width: 100%;
+    height: 100%;
+}

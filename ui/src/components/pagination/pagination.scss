@@ -1,0 +1,126 @@
+.tiny-pagination {
+  --pagination-gap: var(--tiny-space-sm);
+  --item-size: calc(var(--tiny-size) * 8);
+  --item-font-size: var(--tiny-fs-sm);
+  --item-border-radius: var(--tiny-radius-sm);
+
+  --c-bg: transparent;
+  --c-border: rgb(var(--tiny-rgb-neutral-4));
+  --c-text: rgb(var(--tiny-rgb-neutral-7));
+
+  --c-hover-bg: rgb(var(--tiny-rgb-neutral-2) / 0.5);
+  --c-active-border: rgb(var(--tiny-rgb-neutral-2));
+  --c-active-bg: transparent;
+  --c-disabled-text: rgb(var(--tiny-rgb-neutral-4));
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pagination-gap);
+  user-select: none;
+}
+
+.tiny-pagination[data-disabled] {
+  pointer-events: none;
+}
+
+// Size variants
+.tiny-pagination[data-size="small"] {
+  --item-size: calc(var(--tiny-size) * 6);
+  --item-font-size: var(--tiny-fs-xs);
+  --pagination-gap: var(--tiny-space-xs);
+}
+
+.tiny-pagination[data-size="middle"] {
+  --item-size: calc(var(--tiny-size) * 8);
+  --item-font-size: var(--tiny-fs-sm);
+  --pagination-gap: var(--tiny-space-sm);
+}
+
+.tiny-pagination[data-size="large"] {
+  --item-size: calc(var(--tiny-size) * 10);
+  --item-font-size: var(--tiny-fs-md);
+  --pagination-gap: var(--tiny-space-md);
+}
+
+.tiny-pagination-items {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pagination-gap);
+}
+
+.tiny-pagination-item,
+.tiny-pagination-prev,
+.tiny-pagination-next {
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--item-size);
+  height: var(--item-size);
+  padding: 0 var(--tiny-space-xs);
+  font-size: var(--item-font-size);
+  color: var(--c-text);
+  background: var(--c-bg);
+  border: 1px solid transparent;
+  border-radius: var(--item-border-radius);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  box-sizing: border-box;
+  font-weight: 500;
+}
+
+.tiny-pagination-item:hover:not([data-active]):not([disabled]),
+.tiny-pagination-prev:hover:not([disabled]),
+.tiny-pagination-next:hover:not([disabled]) {
+  background: var(--c-hover-bg);
+}
+
+.tiny-pagination-item:focus-visible:not([disabled]),
+.tiny-pagination-prev:focus-visible:not([disabled]),
+.tiny-pagination-next:focus-visible:not([disabled]),
+.tiny-pagination-input:focus-visible {
+  border-color: rgb(var(--tiny-rgb-brand-4));
+  outline: 2px solid rgb(var(--tiny-rgb-brand-3));
+  outline-offset: -1px;
+}
+
+.tiny-pagination-item[disabled],
+.tiny-pagination-prev[disabled],
+.tiny-pagination-next[disabled] {
+  --c-text: var(--c-disabled-text);
+  --c-active-bg: rgb(var(--tiny-rgb-neutral-1));
+}
+
+.tiny-pagination-item[data-active] {
+  border-color: var(--c-active-border);
+  background: var(--c-active-bg);
+  cursor: default;
+}
+
+.tiny-pagination-prev,
+.tiny-pagination-next {
+  width: var(--item-size);
+}
+
+.tiny-pagination-separator {
+  color: var(--c-text);
+  font-size: var(--item-font-size);
+
+  &[data-disabled] {
+    --c-text: var(--c-disabled-text);
+  }
+}
+
+.tiny-pagination-input {
+  width: var(--width);
+  height: var(--item-size);
+  padding: 0;
+  font-size: var(--item-font-size);
+  color: var(--c-text);
+  background: transparent;
+  border: 1px solid rgb(var(--tiny-rgb-brand-4));
+  border-radius: var(--item-border-radius);
+  text-align: center;
+}

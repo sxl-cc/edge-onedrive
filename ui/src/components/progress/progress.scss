@@ -1,0 +1,27 @@
+.tiny-progress-line-rail {
+  border-radius: var(--tiny-radius-lg);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tiny-progress-line-fill {
+  border-radius: var(--tiny-radius-lg);
+  transition: width 0.15s ease;
+}
+
+.tiny-progress-line-fill[data-indeterminate] {
+  position: relative;
+  opacity: 0.7;
+  animation: ani-slide-loading 1.5s infinite linear;
+}
+
+@keyframes ani-slide-loading {
+  0% {
+    inset-inline-start: -45%;
+  }
+
+  100% {
+    inset-inline-start: 100%;
+  }
+}

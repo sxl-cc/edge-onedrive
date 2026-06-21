@@ -1,0 +1,55 @@
+.tiny-text-field {
+    /* vars */
+    --height: calc(var(--tiny-size) * 8);
+    --c-border: rgb(var(--tiny-rgb-neutral-4));
+    --c-disabled-bg: rgb(var(--tiny-rgb-neutral-1));
+    --fs: var(--tiny-fs-sm);
+
+    font-size: var(--fs);
+    height: var(--height);
+    border: 1px solid var(--c-border);
+    border-radius: var(--tiny-radius-sm);
+    padding-left: var(--tiny-space-sm);
+    padding-right: var(--tiny-space-sm);
+    transition: border-color 150ms;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    &:focus-within {
+        --c-border: rgb(var(--tiny-rgb-brand-3));
+        outline: 2px solid var(--c-border);
+        outline-offset: -1px;
+    }
+
+    &[data-invalid] {
+        --c-border: rgb(var(--tiny-rgb-danger-base));
+    }
+
+    &[data-size="small"] {
+        --height: calc(var(--tiny-size) * 6);
+        --fs: var(--tiny-fs-xs);
+    }
+
+    &[data-size="large"] {
+        --height: calc(var(--tiny-size) * 10);
+        --fs: var(--tiny-fs-md);
+    }
+
+    &[data-disabled] {
+        pointer-events: none;
+        user-select: none;
+        background: var(--c-disabled-bg);
+        opacity: 0.7;
+    }
+}
+
+.tiny-text-field-input {
+    width: 100%;
+    height: 100%;
+}
+
+.tiny-text-field-prefix,
+.tiny-text-field-suffix {
+    flex: none;
+}

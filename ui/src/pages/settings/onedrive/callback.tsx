@@ -1,7 +1,8 @@
 import { A, useSearchParams } from "@solidjs/router";
 import { createSignal, Show } from "solid-js";
 import { createQuery } from "solid-tiny-query";
-import { Button, SpinRing } from "solid-tiny-ui";
+import { Button } from "../../../components/button";
+import { SpinRing } from "../../../components/spin";
 import { useTranslator } from "../../../i18n";
 import {
   exchangeOneDriveAuthorizationCode,

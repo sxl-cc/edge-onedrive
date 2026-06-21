@@ -1,8 +1,9 @@
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, createSignal, Show } from "solid-js";
 import { createQuery } from "solid-tiny-query";
-import { Button, SpinRing } from "solid-tiny-ui";
 import type { MsGraphDriveItem } from "~api";
+import { Button } from "../../components/button";
+import { SpinRing } from "../../components/spin";
 import { normalizeUrlPath } from "../../utils/path";
 import { req } from "../../utils/req";
 import { FileView } from "./file-view";
@@ -50,27 +51,27 @@ export default function IndexPage() {
       <div class="absolute top-[-42px] right-4px flex items-start justify-end gap-4px">
         <Button
           disabled={normalizeUrlPath(params.path) === "/"}
-          icon={<div class="i-ri:arrow-up-line c-text-label text-20px" />}
           onClick={() => {
             const paths = params.path.split("/");
             paths.pop();
             $n(`${normalizeUrlPath("v", ...paths)}?type=folder`);
           }}
           variant="text"
-        />
+        >
+          <div class="i-ri:arrow-up-line c-text-label text-20px" />
+        </Button>
         <Button
-          icon={<div class="i-ri:refresh-line c-text-label text-18px" />}
           onClick={async () => {
             await query.refetch();
             setRefetchSignal((prev) => prev + 1);
           }}
           variant="text"
-        />
-        <Button
-          icon={<div class="i-ri:settings-line c-text-label text-18px" />}
-          onClick={() => $n("/settings")}
-          variant="text"
-        />
+        >
+          <div class="i-ri:refresh-line c-text-label text-18px" />
+        </Button>
+        <Button onClick={() => $n("/settings")} variant="text">
+          <div class="i-ri:settings-line c-text-label text-18px" />
+        </Button>
       </div>
       <div class="h-full w-full">
         <Show

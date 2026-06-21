@@ -2,8 +2,9 @@ import routes from "virtual:pages";
 import { Router } from "@solidjs/router";
 import type { JSX } from "solid-js";
 import { createQueryClient } from "solid-tiny-query";
-import { TinyToasterProvider, TinyUiProvider, useToaster } from "solid-tiny-ui";
-import { createWatch, makeEventListener } from "solid-tiny-utils";
+import { createWatch } from "solid-tiny-utils";
+import { TinyUiProvider } from "./components/root-provider";
+import { TinyToasterProvider, useToaster } from "./components/toaster";
 import type { Dictionary } from "./i18n";
 import { Layout } from "./parts/layout";
 import { useAppState } from "./states/app-state";
@@ -33,18 +34,15 @@ function QueryClientProvider(props: {
 }
 
 export function App(props: { dict?: Dictionary; locale?: string }) {
-  const [, actions] = useAppState();
+  const [state] = useAppState();
 
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-  makeEventListener(mediaQuery, "change", () => {
-    actions.setState("themeMediaChanges", (p) => p + 1);
-  });
-
-  createWatch(actions.getTheme, (t) => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(t);
-  });
+  createWatch(
+    () => state.theme,
+    (t) => {
+      document.documentElement.classList.remove("light", "dark");
+      document.documentElement.classList.add(t);
+    }
+  );
 
   return (
     <Router

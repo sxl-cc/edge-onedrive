@@ -1,0 +1,16 @@
+.tiny-field__label {
+    color: var(--tiny-c-text-heading);
+    font-size: var(--tiny-fs-sm);
+    font-weight: 500;
+    line-height: var(--tiny-lh-tight);
+}
+
+.tiny-field__required-indicator {
+    color: rgb(var(--tiny-rgb-danger-base));
+    margin-left: 2px;
+}
+
+.tiny-field__description {
+    color: var(--tiny-c-text-description);
+    font-size: var(--tiny-fs-xs);
+}

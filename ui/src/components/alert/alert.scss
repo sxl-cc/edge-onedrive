@@ -1,0 +1,113 @@
+.tiny-alert {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--tiny-space-lg) var(--tiny-space-xl);
+  border-radius: var(--tiny-radius-md);
+  gap: var(--tiny-space-lg);
+  position: relative;
+  font-size: var(--tiny-fs-sm);
+  line-height: var(--tiny-lh-base);
+}
+
+.tiny-alert__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tiny-alert__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tiny-alert__title {
+  font-weight: 600;
+  margin-bottom: var(--tiny-space-xs);
+}
+
+.tiny-alert__description {
+  opacity: 0.9;
+}
+
+.tiny-alert__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--tiny-rgb-brand-5));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+// Status colors
+.tiny-alert {
+  &[data-status="info"] {
+    --rgb-base: var(--tiny-rgb-info-base);
+    --rgb-surface: var(--tiny-rgb-info-surface);
+    --rgb-text: var(--tiny-rgb-info-fg);
+  }
+
+  &[data-status="success"] {
+    --rgb-base: var(--tiny-rgb-success-base);
+    --rgb-surface: var(--tiny-rgb-success-surface);
+    --rgb-text: var(--tiny-rgb-success-fg);
+  }
+
+  &[data-status="warning"] {
+    --rgb-base: var(--tiny-rgb-warning-base);
+    --rgb-surface: var(--tiny-rgb-warning-surface);
+    --rgb-text: var(--tiny-rgb-warning-fg);
+  }
+
+  &[data-status="error"] {
+    --rgb-base: var(--tiny-rgb-danger-base);
+    --rgb-surface: var(--tiny-rgb-danger-surface);
+    --rgb-text: var(--tiny-rgb-danger-fg);
+  }
+}
+
+// Subtle variant (default)
+.tiny-alert[data-variant="subtle"] {
+  background-color: rgb(var(--rgb-surface) / 0.5);
+  color: rgb(var(--rgb-text));
+
+  .tiny-alert__icon {
+    color: rgb(var(--rgb-base));
+  }
+}
+
+// Solid variant
+.tiny-alert[data-variant="solid"] {
+  background-color: rgb(var(--rgb-base));
+  color: var(--tiny-c-white);
+
+  .tiny-alert__icon {
+    color: var(--tiny-c-white);
+  }
+}
+
+// Outline variant
+.tiny-alert[data-variant="outline"] {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px rgb(var(--rgb-base) / 0.8);
+  color: rgb(var(--rgb-text));
+
+  .tiny-alert__icon {
+    color: rgb(var(--rgb-text));
+  }
+}
