@@ -8,7 +8,7 @@ export default function Table(
     widthRef?: HTMLDivElement;
   }
 ) {
-  const Context = context.initial();
+  const Context = context.initial({});
   const [local, others] = splitProps(props, ["ref", "widthRef"]);
   const [state, actions] = Context.value;
 

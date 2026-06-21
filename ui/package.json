@@ -18,7 +18,6 @@
     "@solidjs/router": "^0.16.1",
     "feqi": "^0.2.0",
     "solid-js": "^1.9.13",
-    "solid-tiny-context": "^0.3.1",
     "solid-tiny-query": "^0.9.1",
     "solid-tiny-utils": "^0.15.0",
     "time-core": "^0.3.0"

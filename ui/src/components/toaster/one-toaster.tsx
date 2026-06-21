@@ -17,7 +17,6 @@ function HiddenAutoDismiss(props: {
   let ref!: HTMLDivElement;
 
   onMount(() => {
-    // reflow
     // biome-ignore lint/suspicious/noUnusedExpressions: reflow
     ref.offsetHeight;
 
@@ -30,7 +29,6 @@ function HiddenAutoDismiss(props: {
             ref.style.width = "100%";
           }
         }
-        // biome-ignore lint/style/noNonNullAssertion: safe
         const percent = ref.offsetWidth / ref.parentElement!.offsetWidth;
 
         if (percent === 0 && duration > 0) {

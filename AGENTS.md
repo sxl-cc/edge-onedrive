@@ -10,20 +10,6 @@ Core goals:
 - Keep the API small, predictable, and easy to deploy
 - Focus on directory listing and related read-only metadata first
 
-## Scope
-
-Current priority:
-
-- List directories from OneDrive
-- Normalize output across environments
-- Keep the UI as a minimal verification shell, not a full product
-
-Out of scope for now:
-
-- Heavy UI features
-- Large framework abstractions
-- Write operations unless clearly needed later
-
 ## Structure
 
 - `api`: Hono service, adapters, environment handling

@@ -17,6 +17,12 @@
       },
       "style": {
         "noNonNullAssertion": "off"
+      },
+      "a11y": {
+        "noStaticElementInteractions": "off"
+      },
+      "suspicious": {
+        "noUnassignedVariables": "off"
       }
     }
   }

@@ -26,7 +26,7 @@ export function Flex<T extends ValidComponent>(
   const gap = createMemo(() => {
     const gapProp = props.gap || 0;
     if (isString(gapProp)) {
-      return gapProp;
+      return `var(--tiny-space-${gapProp})`;
     }
     return `${gapProp}px`;
   });
