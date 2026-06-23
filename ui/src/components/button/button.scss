@@ -3,7 +3,7 @@
     position: relative;
     align-items: center;
     justify-content: center;
-    padding: 0 var(--tiny-space-lg);
+    padding: 0 calc(var(--tiny-size) * 2.5);
     border-radius: var(--tiny-radius-md);
     border-color: transparent;
     border-style: solid;
@@ -24,12 +24,10 @@
 
     &[data-size="small"] {
         --height: calc(var(--tiny-size) * 6);
-        padding: 0 calc(var(--tiny-size) * 2.5);
         font-size: var(--tiny-fs-xs);
     }
     &[data-size="large"] {
         --height: calc(var(--tiny-size) * 10);
-        padding: 0 var(--tiny-space-xl);
         font-size: var(--tiny-fs-md);
     }
 
@@ -59,6 +57,7 @@
     &[data-variant="text"] {
         color: rgb(var(--rgb-base));
         --bg-opacity: 0;
+        --rgb-surface: var(--tiny-rgb-neutral-3);
         background: rgb(var(--rgb-surface) / var(--bg-opacity));
 
         &:not([data-disabled]):hover {

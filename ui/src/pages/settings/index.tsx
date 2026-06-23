@@ -1,13 +1,10 @@
-import { createEffect, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createQuery } from "solid-tiny-query";
 import { Button } from "../../components/button";
 import { Field } from "../../components/field";
-import {
-  Combobox,
-  PasswordInput,
-  TextField,
-} from "../../components/form-components";
+import { Combobox } from "../../components/form-components";
 import { SpinRing } from "../../components/spin";
 import { useToaster } from "../../components/toaster";
 import { type Locale, useTranslator } from "../../i18n";
@@ -17,18 +14,11 @@ import {
 } from "../../lib/pkce";
 import { useAppState } from "../../states/app-state";
 import { req } from "../../utils/req";
+import { LoginChanger } from "./login_changer";
 
 interface AuthSettingsState {
   has_api_key: boolean;
   has_ms_graph_refresh_token: boolean;
-  username: string;
-}
-
-interface SettingsFormState {
-  confirmPassword: string;
-  newApiKey: string;
-  password: string;
-  savingLogin: boolean;
   username: string;
 }
 
@@ -42,13 +32,6 @@ interface SettingsOption<T extends string> {
 
 async function getAuthSettings() {
   return await req.get<AuthSettingsState>("/api/v1/auth/settings");
-}
-
-async function updateLoginInfo(username: string, password: string) {
-  await req.post("/api/v1/auth/change-login-info", {
-    username,
-    password,
-  });
 }
 
 async function createApiKey() {
@@ -87,57 +70,10 @@ export default function SettingsPage() {
   const t = useTranslator();
   const [appState, appActions] = useAppState();
   const query = createQuery(getAuthSettings);
-  const [form, setForm] = createStore<SettingsFormState>({
-    username: "",
-    password: "",
-    confirmPassword: "",
+  const [form, setForm] = createStore({
     newApiKey: "",
     savingLogin: false,
   });
-
-  createEffect(() => {
-    const username = query.data?.username;
-    if (username && !form.username) {
-      setForm("username", username);
-    }
-  });
-
-  const saveLoginInfo = async () => {
-    const username = form.username.trim();
-    const password = form.password;
-
-    if (username.length < 4) {
-      toaster.error(t("settings.usernameMinError"));
-      return;
-    }
-
-    if (password.length < 9) {
-      toaster.error(t("settings.passwordMinError"));
-      return;
-    }
-
-    if (password !== form.confirmPassword) {
-      toaster.error(t("settings.passwordMismatchError"));
-      return;
-    }
-
-    setForm("savingLogin", true);
-
-    try {
-      await updateLoginInfo(username, password);
-      setForm({
-        username,
-        password: "",
-        confirmPassword: "",
-      });
-      await query.refetch();
-      toaster.success(t("settings.loginSaved"));
-    } catch (error) {
-      toaster.error(getErrorMessage(error));
-    } finally {
-      setForm("savingLogin", false);
-    }
-  };
 
   const generateApiKey = async () => {
     try {
@@ -185,163 +121,135 @@ export default function SettingsPage() {
     { label: "dark", value: "dark" },
   ];
 
+  const $n = useNavigate();
+
   return (
-    <section class="scrollbar h-full overflow-y-auto p-xl">
-      <Show
-        fallback={
-          <div class="flex h-full w-full items-center justify-center">
-            <SpinRing />
-          </div>
-        }
-        when={!query.isLoading}
-      >
-        <div class="flex w-full flex-col">
-          <header class="mb-xl pt-md">
-            <p class="fs-xs c-neutral-6 m-0 uppercase tracking-[0.18em]">
-              Edge OneDrive
-            </p>
-            <p class="fs-xl c-text-heading m-0 mt-sm font-700">
-              {t("global.settings")}
-            </p>
-            <p class="c-neutral-7 fs-sm m-0 mt-sm leading-6">
-              {t("settings.description")}
-            </p>
-          </header>
-
-          <section class="mb-3xl grid gap-lg md:grid-cols-2">
-            <Field>
-              <Field.Title>{t("settings.language")}</Field.Title>
-              <Combobox<SettingsOption<LocaleSetting>>
-                onChange={(value) =>
-                  appActions.setState("locale", value as LocaleSetting)
-                }
-                options={languageOptions()}
-                size="large"
-                value={appState.locale}
-              />
-            </Field>
-
-            <Field>
-              <Field.Title>{t("settings.theme")}</Field.Title>
-              <Combobox<SettingsOption<ThemeSetting>>
-                onChange={(value) =>
-                  appActions.setState("theme", value as ThemeSetting)
-                }
-                options={themeOptions()}
-                size="large"
-                value={appState.theme}
-              />
-            </Field>
-          </section>
-
-          <form
-            class="mb-3xl flex flex-col gap-lg"
-            onSubmit={async (event) => {
-              event.preventDefault();
-              await saveLoginInfo();
-            }}
-          >
-            <Field>
-              <Field.Title>{t("settings.username")}</Field.Title>
-              <TextField
-                disabled={form.savingLogin || query.isLoading}
-                onChange={(value) => setForm("username", value)}
-                placeholder="admin"
-                size="large"
-                value={form.username}
-              />
-            </Field>
-
-            <Field>
-              <Field.Title>{t("settings.newPassword")}</Field.Title>
-              <PasswordInput
-                disabled={form.savingLogin}
-                onChange={(value) => setForm("password", value)}
-                placeholder={t("settings.passwordPlaceholder")}
-                size="large"
-                value={form.password}
-              />
-            </Field>
-
-            <Field>
-              <Field.Title>{t("settings.confirmPassword")}</Field.Title>
-              <PasswordInput
-                disabled={form.savingLogin}
-                onChange={(value) => setForm("confirmPassword", value)}
-                placeholder={t("settings.confirmPasswordPlaceholder")}
-                size="large"
-                value={form.confirmPassword}
-              />
-            </Field>
-
-            <div>
-              <Button onClick={saveLoginInfo} type="button">
-                {t("settings.saveLogin")}
-              </Button>
+    <section class="relative h-full">
+      <div class="absolute top-[-42px] right-4px flex items-start justify-end gap-4px">
+        <Button
+          onClick={() => {
+            $n(-1);
+          }}
+          variant="text"
+        >
+          <div class="i-ri:arrow-up-line c-text-label text-20px" />
+        </Button>
+      </div>
+      <div class="scrollbar h-full w-full overflow-y-auto p-xl">
+        <Show
+          fallback={
+            <div class="flex h-full w-full items-center justify-center">
+              <SpinRing />
             </div>
-          </form>
+          }
+          when={!query.isLoading}
+        >
+          <div class="flex w-full flex-col">
+            <header class="mb-xl pt-md">
+              <p class="fs-xs c-neutral-6 m-0 uppercase tracking-[0.18em]">
+                Edge OneDrive
+              </p>
+              <p class="fs-xl c-text-heading m-0 mt-sm font-700">
+                {t("global.settings")}
+              </p>
+              <p class="c-neutral-7 fs-sm m-0 mt-sm leading-6">
+                {t("settings.description")}
+              </p>
+            </header>
 
-          <section class="mb-3xl">
-            <Field>
-              <Field.Title align="center">
-                <div>{t("settings.oneDriveAuthorization")}</div>
-                <StatusPill
-                  active={Boolean(query.data?.has_ms_graph_refresh_token)}
-                  label={
-                    query.data?.has_ms_graph_refresh_token
-                      ? t("settings.configured")
-                      : t("settings.notConfigured")
+            <section class="mb-3xl grid gap-lg md:grid-cols-2">
+              <Field>
+                <Field.Title>{t("settings.language")}</Field.Title>
+                <Combobox<SettingsOption<LocaleSetting>>
+                  onChange={(value) =>
+                    appActions.setState("locale", value as LocaleSetting)
                   }
+                  options={languageOptions()}
+                  size="large"
+                  value={appState.locale}
                 />
-              </Field.Title>
-              <Field.Description>
-                {t("settings.oneDriveAuthorizationDescription")}
-              </Field.Description>
+              </Field>
+
+              <Field>
+                <Field.Title>{t("settings.theme")}</Field.Title>
+                <Combobox<SettingsOption<ThemeSetting>>
+                  onChange={(value) =>
+                    appActions.setState("theme", value as ThemeSetting)
+                  }
+                  options={themeOptions()}
+                  size="large"
+                  value={appState.theme}
+                />
+              </Field>
+            </section>
+
+            <LoginChanger
+              class="mb-3xl flex flex-col gap-lg"
+              username={query.data?.username || ""}
+            />
+
+            <section class="mb-3xl">
+              <Field>
+                <Field.Title align="center">
+                  <div>{t("settings.oneDriveAuthorization")}</div>
+                  <StatusPill
+                    active={Boolean(query.data?.has_ms_graph_refresh_token)}
+                    label={
+                      query.data?.has_ms_graph_refresh_token
+                        ? t("settings.configured")
+                        : t("settings.notConfigured")
+                    }
+                  />
+                </Field.Title>
+                <Field.Description>
+                  {t("settings.oneDriveAuthorizationDescription")}
+                </Field.Description>
+                <div class="mt-lg">
+                  <Button onClick={beginOneDriveAuthorization}>
+                    {t("settings.authorizeOneDrive")}
+                  </Button>
+                </div>
+              </Field>
+            </section>
+
+            <section>
+              <Field>
+                <Field.Title align="center">
+                  <div>{t("settings.apiKey")}</div>
+                  <StatusPill
+                    active={Boolean(query.data?.has_api_key)}
+                    label={
+                      query.data?.has_api_key
+                        ? t("settings.configured")
+                        : t("settings.notConfigured")
+                    }
+                  />
+                </Field.Title>
+                <Field.Description>
+                  {t("settings.apiKeyDescription")}
+                </Field.Description>
+              </Field>
+
               <div class="mt-lg">
-                <Button onClick={beginOneDriveAuthorization}>
-                  {t("settings.authorizeOneDrive")}
-                </Button>
-              </div>
-            </Field>
-          </section>
+                <div class="flex flex-wrap items-center gap-md">
+                  <Button onClick={generateApiKey}>
+                    {t("settings.generateApiKey")}
+                  </Button>
+                  <Show when={form.newApiKey}>
+                    <Button onClick={copyApiKey}>{t("settings.copy")}</Button>
+                  </Show>
+                </div>
 
-          <section>
-            <Field>
-              <Field.Title align="center">
-                <div>{t("settings.apiKey")}</div>
-                <StatusPill
-                  active={Boolean(query.data?.has_api_key)}
-                  label={
-                    query.data?.has_api_key
-                      ? t("settings.configured")
-                      : t("settings.notConfigured")
-                  }
-                />
-              </Field.Title>
-              <Field.Description>
-                {t("settings.apiKeyDescription")}
-              </Field.Description>
-            </Field>
-
-            <div class="mt-lg">
-              <div class="flex flex-wrap items-center gap-md">
-                <Button onClick={generateApiKey}>
-                  {t("settings.generateApiKey")}
-                </Button>
                 <Show when={form.newApiKey}>
-                  <Button onClick={copyApiKey}>{t("settings.copy")}</Button>
+                  <pre class="c-neutral-9 fs-sm m-0 mt-lg overflow-x-auto rounded-5 bg-neutral-1/40 p-md">
+                    {form.newApiKey}
+                  </pre>
                 </Show>
               </div>
-
-              <Show when={form.newApiKey}>
-                <pre class="c-neutral-9 fs-sm m-0 mt-lg overflow-x-auto rounded-5 bg-neutral-1/40 p-md">
-                  {form.newApiKey}
-                </pre>
-              </Show>
-            </div>
-          </section>
-        </div>
-      </Show>
+            </section>
+          </div>
+        </Show>
+      </div>
     </section>
   );
 }

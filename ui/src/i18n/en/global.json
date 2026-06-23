@@ -3,5 +3,6 @@
   "size": "Size",
   "created_at": "Created At",
   "download": "Download",
-  "settings": "Settings"
+  "settings": "Settings",
+  "cancel": "Cancel"
 }

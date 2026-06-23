@@ -2,7 +2,7 @@
     /* vars */
     --height: calc(var(--tiny-size) * 8);
     --c-border: rgb(var(--tiny-rgb-neutral-4));
-    --c-disabled-bg: rgb(var(--tiny-rgb-neutral-1));
+    --c-disabled-bg: rgb(var(--tiny-rgb-neutral-2) / 0.4);
     --fs: var(--tiny-fs-sm);
 
     font-size: var(--fs);
@@ -16,7 +16,7 @@
     display: flex;
     align-items: center;
 
-    &:focus-within {
+    &:has(input:focus-visible) {
         --c-border: rgb(var(--tiny-rgb-brand-3));
         outline: 2px solid var(--c-border);
         outline-offset: -1px;
@@ -34,6 +34,11 @@
     &[data-size="large"] {
         --height: calc(var(--tiny-size) * 10);
         --fs: var(--tiny-fs-md);
+    }
+
+    &[data-read-only] {
+        background: var(--c-disabled-bg);
+        opacity: 0.8;
     }
 
     &[data-disabled] {

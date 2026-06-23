@@ -15,6 +15,7 @@ export interface TextFieldProps extends AriaAndDataProps {
   onPressEnter?: (e: KeyboardEvent) => void;
   placeholder?: string;
   prefix?: JSX.Element;
+  readOnly?: boolean;
   size?: "small" | "medium" | "large";
   suffix?: JSX.Element;
   value?: string;
@@ -36,6 +37,7 @@ export function TextField(props: TextFieldProps) {
       class="tiny-text-field"
       data-disabled={dataIf(props.disabled ?? false)}
       data-invalid={dataIf(props.invalid ?? false)}
+      data-read-only={dataIf(props.readOnly ?? false)}
       data-size={props.size || "medium"}
     >
       <Show when={prefix()}>
@@ -55,6 +57,7 @@ export function TextField(props: TextFieldProps) {
         }}
         onKeyDown={handleKeyDown}
         placeholder={props.placeholder}
+        readOnly={props.readOnly}
         type="text"
         value={props.value}
       />

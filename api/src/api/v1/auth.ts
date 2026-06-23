@@ -21,6 +21,12 @@ const loginInfo = type({
   password: "string > 8",
 });
 
+const updateLoginInfo = type({
+  username: "string > 3",
+  old_password: "string > 0",
+  new_password: "string > 8",
+});
+
 const refreshInfo = type({
   refresh_token: "string",
 });
@@ -132,12 +138,25 @@ export function registerV1AuthRoutes(v1: V1App) {
   v1.post(
     "/auth/change-login-info",
     auth(),
-    arkVali("json", loginInfo),
+    arkVali("json", updateLoginInfo),
     async (c) => {
       const data = c.req.valid("json");
       const kv = c.get("kv");
+      const realHashedPassword = await kv.get("hashed_password");
+
+      if (
+        realHashedPassword &&
+        !(await verifySafeHash(data.old_password, realHashedPassword))
+      ) {
+        throw new ApiError("Old password is invalid", {
+          status: 401,
+          details: null,
+          code: "WRONG_OLD_PASSWORD",
+        });
+      }
+
       await kv.put("username", data.username);
-      await kv.put("hashed_password", await safeHash(data.password));
+      await kv.put("hashed_password", await safeHash(data.new_password));
 
       return success(c);
     }

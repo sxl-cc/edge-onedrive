@@ -3,5 +3,6 @@
   "size": "大小",
   "created_at": "创建时间",
   "download": "下载",
-  "settings": "设置"
+  "settings": "设置",
+  "cancel": "取消"
 }
