@@ -14,7 +14,7 @@ import {
 } from "../../lib/pkce";
 import { useAppState } from "../../states/app-state";
 import { req } from "../../utils/req";
-import { LoginChanger } from "./login_changer";
+import { LoginChanger } from "./login-changer";
 
 interface AuthSettingsState {
   has_api_key: boolean;
