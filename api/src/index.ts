@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import v1 from "./api/v1";
 import v2 from "./api/v2";
 import type { KeyValueStorage } from "./kv-storage";
+import { createS3Routes } from "./s3/routes";
 import { type AppRuntimeEnv, getEnvConfig } from "./utils/env";
 import { ApiError } from "./utils/error";
 
@@ -45,6 +46,7 @@ export function createEdgeOnedriveApp(params: edgeOnedriveAppParams) {
 
   app.route("/api/v1", v1);
   app.route("/api/v2", v2);
+  app.route("/", createS3Routes());
 
   app.onError((err, c) => {
     if (err instanceof ApiError) {

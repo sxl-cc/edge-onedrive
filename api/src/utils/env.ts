@@ -14,6 +14,9 @@ export interface AppRuntimeEnv {
   LINK_FORCE_SIGN?: EnvValue;
   LINK_PROXY?: EnvValue;
   ROOT_DIR?: EnvValue;
+  S3_ACCESS_KEY_ID?: EnvValue;
+  S3_BUCKET?: EnvValue;
+  S3_SECRET_ACCESS_KEY?: EnvValue;
 }
 
 export interface AppEnvConfig {
@@ -37,12 +40,18 @@ export interface AppEnvConfig {
     entraIdEndpoint: string;
     graphEndpoint: string;
   };
+  s3: {
+    accessKeyId: string;
+    bucket: string;
+    secretAccessKey: string;
+  };
 }
 
 const DEFAULT_ENTRA_ID_ENDPOINT = "https://login.microsoftonline.com";
 const DEFAULT_GRAPH_ENDPOINT = "https://graph.microsoft.com";
 const DEFAULT_ROOT_DIR = "/";
 const DEFAULT_CORS_ORIGINS = ["*"];
+const DEFAULT_S3_BUCKET = "onedrive";
 
 function readString(value: EnvValue) {
   return value === undefined ? "" : `${value}`.trim();
@@ -96,6 +105,11 @@ export function createEnvConfig(raw: AppRuntimeEnv = {}): AppEnvConfig {
       entraIdEndpoint:
         readString(raw.ENTRA_ID_ENDPOINT) || DEFAULT_ENTRA_ID_ENDPOINT,
       graphEndpoint: readString(raw.GRAPH_ENDPOINT) || DEFAULT_GRAPH_ENDPOINT,
+    },
+    s3: {
+      accessKeyId: readString(raw.S3_ACCESS_KEY_ID),
+      bucket: readString(raw.S3_BUCKET) || DEFAULT_S3_BUCKET,
+      secretAccessKey: readString(raw.S3_SECRET_ACCESS_KEY),
     },
   };
 }
